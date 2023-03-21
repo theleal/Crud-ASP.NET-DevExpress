@@ -112,7 +112,7 @@ namespace DXWebApplication1 {
                 ASPxGridView1.DataBind();
         }
 
-        public void InsertData(string nome, string cpf, string email, string datanascimento, string genero, string celular, string senha)
+        public void InsertData(string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString)) 
             {
@@ -144,7 +144,7 @@ namespace DXWebApplication1 {
             pessoaFisica.Nome = e.NewValues["NOME"] != null ? e.NewValues["NOME"].ToString() : null;
             pessoaFisica.Cpf = e.NewValues["CPF"] != null ? e.NewValues["CPF"].ToString() : null;
             pessoaFisica.Email = e.NewValues["EMAIL"] != null ? e.NewValues["EMAIL"].ToString() : null;
-            pessoaFisica.Data = e.NewValues["DATANASCIMENTO"] != null ? e.NewValues["DATANASCIMENTO"].ToString() : null;
+            if (e.NewValues["DATANASCIMENTO"] != null)pessoaFisica.Data = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
             pessoaFisica.Genero = e.NewValues["GENERO"] != null ? e.NewValues["GENERO"].ToString() : null;
             pessoaFisica.Celular = e.NewValues["CELULAR"] != null ? e.NewValues["CELULAR"].ToString() : null;
             pessoaFisica.Senha = e.NewValues["SENHA"] != null ? e.NewValues["SENHA"].ToString() : null;

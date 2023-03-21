@@ -204,7 +204,7 @@
                         <dx:GridViewDataTextColumn Caption="Nome" FieldName="NOME"></dx:GridViewDataTextColumn>
                         <dx:GridViewDataTextColumn Caption="CPF" FieldName="CPF"></dx:GridViewDataTextColumn>
                         <dx:GridViewDataTextColumn Caption="E-mail" FieldName="EMAIL"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataTextColumn Caption="Data Nascimento" FieldName="DATANASCIMENTO"></dx:GridViewDataTextColumn>
+                        <dx:GridViewDataDateColumn Caption="Data de Nascimento" FieldName="DATANASCIMENTO"></dx:GridViewDataDateColumn>
                         <dx:GridViewDataTextColumn Caption="Genero" FieldName="GENERO"></dx:GridViewDataTextColumn>
                         <dx:GridViewDataTextColumn Caption="Celular" FieldName="CELULAR"></dx:GridViewDataTextColumn>
                         <dx:GridViewDataTextColumn Caption="Senha" FieldName="SENHA"></dx:GridViewDataTextColumn>
