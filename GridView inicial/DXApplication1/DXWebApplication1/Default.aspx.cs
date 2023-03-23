@@ -7,16 +7,17 @@ using System;
 using System.Data.SqlClient;
 using System.Web.Hosting;
 
-namespace DXWebApplication1 {
+namespace DXWebApplication1
+{
 
-    public partial class Default : System.Web.UI.Page 
+    public partial class Default : System.Web.UI.Page
     {
 
         private string _connectionString = "Data Source=IPORT\\SQLEXPRESS; Integrated Security=True; Initial Catalog=iPortCrud;";
 
-        protected void Page_Load(object sender, EventArgs e) 
+        protected void Page_Load(object sender, EventArgs e)
         {
-            
+
 
 
         }
@@ -24,7 +25,7 @@ namespace DXWebApplication1 {
         #region Enumeradores
 
         private enum AcaoCallBack
-        { 
+        {
             Filtrar,
             Limpar,
         }
@@ -47,8 +48,8 @@ namespace DXWebApplication1 {
                                 from iPortCrud.dbo.usuarios
                                 where id is not null ";
 
-            if (!string.IsNullOrEmpty(PesquisaNomeCliente.Text))            
-                strConsulta += $@"and nome like '%{PesquisaNomeCliente.Text}%'";            
+            if (!string.IsNullOrEmpty(PesquisaNomeCliente.Text))
+                strConsulta += $@"and nome like '%{PesquisaNomeCliente.Text}%'";
 
             if (!string.IsNullOrEmpty(PesquisaCPFCliente.Text))
                 strConsulta += $@"and cpf like '%{PesquisaCPFCliente.Text}%'";
@@ -57,15 +58,15 @@ namespace DXWebApplication1 {
             if (!string.IsNullOrEmpty(PesquisaDataInicio.Text) && (!string.IsNullOrEmpty(PesquisaDataFim.Text)))
             {
                 strConsulta += $@"and data_nascimento BETWEEN '{PesquisaDataInicio.Text}' AND '{PesquisaDataFim.Text}' ";
-            } 
-            
+            }
+
             else if (!string.IsNullOrEmpty(PesquisaDataInicio.Text) && (string.IsNullOrEmpty(PesquisaDataFim.Text)))
             {
                 strConsulta += $@"and data_nascimento >= '{PesquisaDataInicio.Text}' ";
-            } 
+            }
 
             SqlPessoa.SelectCommand = strConsulta;
-            
+
         }
 
         protected void SqlPessoa_Selecting(object sender, System.Web.UI.WebControls.SqlDataSourceSelectingEventArgs e)
@@ -78,7 +79,7 @@ namespace DXWebApplication1 {
             SqlPessoa_Init(null, null);
 
             //Função DataBind é utilizada para DAR UM REFRESH NO GRID
-            ASPxGridView1.DataBind(); 
+            ASPxGridView1.DataBind();
         }
 
         public void search_CPF()
@@ -104,39 +105,14 @@ namespace DXWebApplication1 {
 
         public void delete_Fields()
         {
-                PesquisaNomeCliente.Text = "";
-                PesquisaDataInicio.Text = "";
-                PesquisaDataFim.Text = "";
-                PesquisaCPFCliente.Text = "";
+            PesquisaNomeCliente.Text = "";
+            PesquisaDataInicio.Text = "";
+            PesquisaDataFim.Text = "";
+            PesquisaCPFCliente.Text = "";
 
-                ASPxGridView1.DataBind();
+            ASPxGridView1.DataBind();
         }
 
-        public void InsertData(string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString)) 
-            {
-                connection.Open();
-
-                string query = $@"INSERT INTO iPortCrud.dbo.usuarios (nome, cpf, email, data_nascimento, genero, celular, senha) 
-                                VALUES ('{nome}', 
-                                        '{cpf}', 
-                                        '{email}', 
-                                        '{datanascimento}', 
-                                        '{genero}', 
-                                        '{celular}', 
-                                        '{senha}')";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.ExecuteNonQuery();
-
-                SqlPessoa_Init(null, null);
-                ASPxGridView1.DataBind();
-
-                connection.Close();
-
-            }
-        }
 
         protected void ASPxGridView1_RowInserting(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
         {
@@ -144,11 +120,11 @@ namespace DXWebApplication1 {
             pessoaFisica.Nome = e.NewValues["NOME"] != null ? e.NewValues["NOME"].ToString() : null;
             pessoaFisica.Cpf = e.NewValues["CPF"] != null ? e.NewValues["CPF"].ToString() : null;
             pessoaFisica.Email = e.NewValues["EMAIL"] != null ? e.NewValues["EMAIL"].ToString() : null;
-            if (e.NewValues["DATANASCIMENTO"] != null)pessoaFisica.Data = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
+            if (e.NewValues["DATANASCIMENTO"] != null) pessoaFisica.Data = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
             pessoaFisica.Genero = e.NewValues["GENERO"] != null ? e.NewValues["GENERO"].ToString() : null;
             pessoaFisica.Celular = e.NewValues["CELULAR"] != null ? e.NewValues["CELULAR"].ToString() : null;
             pessoaFisica.Senha = e.NewValues["SENHA"] != null ? e.NewValues["SENHA"].ToString() : null;
-           
+
             InsertData(pessoaFisica.Nome, pessoaFisica.Cpf, pessoaFisica.Email, pessoaFisica.Data, pessoaFisica.Genero, pessoaFisica.Celular, pessoaFisica.Senha);
             /* 
                Ao tentar inserir um novo registro, todos os valores inseridos nos campos do editform podem ser acessados 
@@ -176,6 +152,129 @@ namespace DXWebApplication1 {
 
             }
         }
+
+        protected void ASPxGridView1_RowUpdating(object sender, DevExpress.Web.Data.ASPxDataUpdatingEventArgs e)
+        {
+            var pessoaFisica = new PessoaFisica();
+            pessoaFisica.id = e.Keys["ID"] != null ? e.Keys["ID"].ToString() : null;
+            pessoaFisica.Nome = e.NewValues["NOME"] != null ? e.NewValues["NOME"].ToString() : null;
+            pessoaFisica.Cpf = e.NewValues["CPF"] != null ? e.NewValues["CPF"].ToString() : null;
+            pessoaFisica.Email = e.NewValues["EMAIL"] != null ? e.NewValues["EMAIL"].ToString() : null;
+            if (e.NewValues["DATANASCIMENTO"] != null) pessoaFisica.Data = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
+            pessoaFisica.Genero = e.NewValues["GENERO"] != null ? e.NewValues["GENERO"].ToString() : null;
+            pessoaFisica.Celular = e.NewValues["CELULAR"] != null ? e.NewValues["CELULAR"].ToString() : null;
+            pessoaFisica.Senha = e.NewValues["SENHA"] != null ? e.NewValues["SENHA"].ToString() : null;
+
+
+            UpdateData(pessoaFisica.id, pessoaFisica.Nome, pessoaFisica.Cpf, pessoaFisica.Email, pessoaFisica.Data, pessoaFisica.Genero, pessoaFisica.Celular, pessoaFisica.Senha);
+        }
+
+        protected void ASPxGridView1_RowUpdated(object sender, DevExpress.Web.Data.ASPxDataUpdatedEventArgs e)
+        {
+            try
+            {
+                e.ExceptionHandled = true;
+            }
+
+            catch
+            {
+
+            }
+        }
+
+
+        protected void ASPxGridView1_RowDeleting(object sender, DevExpress.Web.Data.ASPxDataDeletingEventArgs e)
+        {
+            var pessoaFisica = new PessoaFisica();
+            pessoaFisica.id = e.Keys["ID"] != null ? e.Keys["ID"].ToString() : null;
+
+            DeleteData(pessoaFisica.id);
+
+        }
+
+        protected void ASPxGridView1_RowDeleted(object sender, DevExpress.Web.Data.ASPxDataDeletedEventArgs e)
+        {
+            try
+            {
+                e.ExceptionHandled = true;
+            }
+
+            catch
+            {
+
+            }
+
+        }
+
+        protected void DeleteData(string id)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = $@"DELETE FROM iPortCrud.dbo.usuarios WHERE id = {id}";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+
+                SqlPessoa_Init(null, null);
+                ASPxGridView1.DataBind();
+
+                connection.Close();
+            }
+        }
+        protected void InsertData(string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = $@"INSERT INTO iPortCrud.dbo.usuarios (nome, cpf, email, data_nascimento, genero, celular, senha) 
+                                VALUES ('{nome}', 
+                                        '{cpf}', 
+                                        '{email}', 
+                                        '{datanascimento}', 
+                                        '{genero}', 
+                                        '{celular}', 
+                                        '{senha}')";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+
+                SqlPessoa_Init(null, null);
+                ASPxGridView1.DataBind();
+
+                connection.Close();
+
+            }
+        }
+        protected void UpdateData(string id, string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = $@"UPDATE iPortCrud.dbo.usuarios SET 
+                    nome = '{nome}', 
+                    cpf = '{cpf}',
+                    email = '{email}', 
+                    data_nascimento = '{datanascimento}', 
+                    genero = '{genero}', 
+                    celular = '{celular}', 
+                    senha = '{senha}'
+                    WHERE id = {id};";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+
+                SqlPessoa_Init(null, null);
+                ASPxGridView1.DataBind();
+
+                connection.Close();
+
+            }
+        }
+
 
     }
 }

@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Main.Master" CodeBehind="Default.aspx.cs" Inherits="DXWebApplication1.Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Main.Master" CodeBehind="Default.aspx.cs" Inherits="DXWebApplication1.Default" %>
 
 <%@ Register Assembly="DevExpress.Dashboard.v19.1.Web.WebForms, Version=19.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Namespace="DevExpress.DashboardWeb" TagPrefix="dx" %>
 
@@ -42,6 +42,8 @@
                     EnableViewState="false">
                     <Border BorderColor="Transparent" BorderStyle="None" />
                     <ContentPaddings Padding="0px" PaddingBottom="0px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="0px" />
+
+<HeaderContent BackColor="Transparent"></HeaderContent>
                     <PanelCollection>
                         <dx:PanelContent runat="server">
                             <dx:ASPxFormLayout runat="server" ID="layoutFormulario" RequiredMarkDisplayMode="RequiredOnly"
@@ -50,7 +52,7 @@
                                 <Items>
                                     <dx:LayoutGroup Caption="" ColCount="2" SettingsItemHelpTexts-Position="Bottom" GroupBoxDecoration="None" Width="100%">
                                         <Items>
-                                            <dx:LayoutItem Caption="Nome Usu�rio" Width="50%">
+                                            <dx:LayoutItem Caption="Nome Usuário" Width="50%">
                                                 <CaptionStyle Font-Bold="true" />
                                                 <LayoutItemNestedControlCollection>
                                                     <dx:LayoutItemNestedControlContainer>
@@ -95,7 +97,7 @@
                                                 </LayoutItemNestedControlCollection>
                                             </dx:LayoutItem>
 
-                                            <dx:LayoutItem Caption="At�:" Width="50%">
+                                            <dx:LayoutItem Caption="Até:" Width="50%">
                                                 <CaptionStyle Font-Bold="true" />
                                                 <LayoutItemNestedControlCollection>
                                                     <dx:LayoutItemNestedControlContainer>
@@ -110,6 +112,8 @@
                                                 </LayoutItemNestedControlCollection>
                                             </dx:LayoutItem>
                                         </Items>
+
+<SettingsItemHelpTexts Position="Bottom"></SettingsItemHelpTexts>
                                     </dx:LayoutGroup>
                                 </Items>
                             </dx:ASPxFormLayout>
@@ -131,10 +135,13 @@
                                 Text="Limpar">
                                 <ClientSideEvents Click="function(s, e) { Callback_Client(s, 'Limpar'); }" />
                             </dx:ASPxButton>
+                            <br />
                         </dx:PanelContent>
                     </PanelCollection>
 
                 </dx:ASPxRoundPanel>
+
+                <br />
 
                 <dx:ASPxMenu
                     runat="server"
@@ -142,21 +149,33 @@
                     ShowAsToolbar="true"
                     ShowPopOutImages="true"
                     Theme="Office2010Blue"
-                    id="Menu">
+                    ID="Menu">
                     <Items>
                         <dx:MenuItem Text="Criar" Name="CRIAR">
-                            <image IconID="actions_insert_16x16"></image>
+                            <Image IconID="actions_insert_16x16"></Image>
                         </dx:MenuItem>
                     </Items>
-                    <ClientSideEvents ItemClick="onClickMenu"/>
+                    <ClientSideEvents ItemClick="onClickMenu" />
                 </dx:ASPxMenu>
+
+
+
+
+                <br />
+
+
 
 
                 <dx:ASPxGridView
                     ID="ASPxGridView1"
                     ClientInstanceName="ASPxGridView1"
+                    OnRowUpdating="ASPxGridView1_RowUpdating"
+                    OnRowUpdated="ASPxGridView1_RowUpdated"
                     OnRowInserting="ASPxGridView1_RowInserting"
                     OnRowInserted="ASPxGridView1_RowInserted"
+                    OnRowDeleting="ASPxGridView1_RowDeleting"
+                    OnRowDeleted="ASPxGridView1_RowDeleted"
+                    
                     DataSourceID="SqlPessoa"
                     runat="server"
                     Theme="Office2010Blue"
@@ -164,7 +183,7 @@
                     KeyFieldName="ID">
 
 
-                    <SettingsDataSecurity AllowDelete="False" AllowEdit="False" AllowInsert="True" />
+                    <SettingsDataSecurity AllowDelete="True" AllowEdit="True" AllowInsert="True" />
 
                     <SettingsPopup>
                         <HeaderFilter MinHeight="140px"></HeaderFilter>
@@ -200,18 +219,100 @@
                     </SettingsCommandButton>
 
                     <Columns>
-                        <dx:GridViewDataTextColumn FieldName="ID" Visible="false"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataTextColumn Caption="Nome" FieldName="NOME"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataTextColumn Caption="CPF" FieldName="CPF"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataTextColumn Caption="E-mail" FieldName="EMAIL"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataDateColumn Caption="Data de Nascimento" FieldName="DATANASCIMENTO"></dx:GridViewDataDateColumn>
-                        <dx:GridViewDataTextColumn Caption="Genero" FieldName="GENERO"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataTextColumn Caption="Celular" FieldName="CELULAR"></dx:GridViewDataTextColumn>
-                        <dx:GridViewDataTextColumn Caption="Senha" FieldName="SENHA"></dx:GridViewDataTextColumn>
 
                         
+                        <dx:GridViewCommandColumn FooterCellStyle-HorizontalAlign="Left" SelectAllCheckboxMode="Page"  Caption="Seleção" ShowSelectCheckbox="True" VisibleIndex="0" ButtonRenderMode="button">
+<FooterCellStyle HorizontalAlign="Left"></FooterCellStyle>
+                        </dx:GridViewCommandColumn>
+                        <dx:GridViewCommandColumn Caption="ações" ShowEditButton="true" ShowDeleteButton="true" VisibleIndex="1" ButtonRenderMode="button"/>
+
+                        <dx:GridViewDataTextColumn FieldName="ID" Visible="false"></dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="Nome" FieldName="NOME">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RegularExpression ValidationExpression="^[A-Za-z]+$" ErrorText="O campo Nome deve conter apenas letras." />
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="CPF" FieldName="CPF">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField ErrorText="O CPF é obrigatório." />
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                                <MaskSettings Mask="000\.000\.000-00" />
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="E-mail" FieldName="EMAIL">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RegularExpression ValidationExpression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                        ErrorText="Por favor, insira um endereço de email válido." />
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesTextEdit>
+
+
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataDateColumn Caption="Data de Nascimento" FieldName="DATANASCIMENTO">
+                            <PropertiesDateEdit UseMaskBehavior="true" EditFormatString="dd MMMM yyyy">
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesDateEdit>
+                        </dx:GridViewDataDateColumn>
+
+                        <dx:GridViewDataTextColumn Caption="Genero" FieldName="GENERO">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesTextEdit>
+
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="Celular" FieldName="CELULAR">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField IsRequired="true" ErrorText="O CPF é obrigatório." />
+                                </ValidationSettings>
+                                <MaskSettings Mask="(00) 00000-0000" />
+
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="Senha" FieldName="SENHA">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
                     </Columns>
+
+
                 </dx:ASPxGridView>
+
             </dx:PanelContent>
         </PanelCollection>
     </dx:ASPxCallbackPanel>

@@ -9,7 +9,7 @@ namespace DXWebApplication1.Models
     {
         public PessoaFisica() { }
 
-
+        public string id { get; set; }
         public string Nome { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
