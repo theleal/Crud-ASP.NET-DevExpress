@@ -308,6 +308,8 @@
                             </PropertiesTextEdit>
                         </dx:GridViewDataTextColumn>
 
+                        <dx:GridViewDataTextColumn Caption="status" FieldName="STATUS" Visible="false"></dx:GridViewDataTextColumn>
+
                     </Columns>
 
 

@@ -17,6 +17,7 @@ namespace DXWebApplication1.Models
         public string Genero { get; set; }
         public string Celular { get; set; }
         public string Senha {get; set;}
+        public string Status { get; set; }
 
 
     }

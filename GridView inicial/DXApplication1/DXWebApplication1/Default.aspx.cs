@@ -43,10 +43,11 @@ namespace DXWebApplication1
 	                                    data_nascimento as DATANASCIMENTO,
 	                                    genero as GENERO,
 	                                    celular as CELULAR,
-	                                    senha as SENHA 
+	                                    senha as SENHA,
+                                        status as STATUS
 
                                 from iPortCrud.dbo.usuarios
-                                where id is not null ";
+                                  where id is not null AND status = 1";
 
             if (!string.IsNullOrEmpty(PesquisaNomeCliente.Text))
                 strConsulta += $@"and nome like '%{PesquisaNomeCliente.Text}%'";
@@ -182,7 +183,6 @@ namespace DXWebApplication1
             }
         }
 
-
         protected void ASPxGridView1_RowDeleting(object sender, DevExpress.Web.Data.ASPxDataDeletingEventArgs e)
         {
             var pessoaFisica = new PessoaFisica();
@@ -212,7 +212,9 @@ namespace DXWebApplication1
             {
                 connection.Open();
 
-                string query = $@"DELETE FROM iPortCrud.dbo.usuarios WHERE id = {id}";
+                string query = $@"UPDATE iPortCrud.dbo.usuarios SET 
+                    status = '2'
+                    WHERE id = {id};";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 command.ExecuteNonQuery();
@@ -221,6 +223,7 @@ namespace DXWebApplication1
                 ASPxGridView1.DataBind();
 
                 connection.Close();
+
             }
         }
         protected void InsertData(string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
