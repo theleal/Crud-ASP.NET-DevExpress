@@ -19,7 +19,39 @@
             }
         }
 
+        function onButtonClick(s, e) {
+            var fields = s.GetRowKey(e.visibleIndex);
+
+            if (e.buttonID == "deleteButton") {
+                HiddenIdUsuario.Set("IDUsuario", fields);
+                CallbackPanel.PerformCallback("Deletar");
+                console.log(e.buttonID)
+                e.processOnServer = false;
+            }
+            ASPxGridView1.SetVisible(true);
+        }
+
+
+        function Callback_Delecao(s, e) {
+
+            CallbackPanel.PerformCallback(e)
+            e.cancel = true;
+            e.processoOnServer = false;
+
+        }
+
+
+        //function Callback_Delecao(s, e) {
+
+        //    if (e.buttonID == "deleteButton") {
+        //        panelDelete.SetVisible(false)
+        //        e.
+        //    }
+        //}
+
     </script>
+
+    <dx:ASPxHiddenField ClientInstanceName="HiddenIdUsuario" ID="HiddenIdUsuario" runat="server"></dx:ASPxHiddenField>
 
     <dx:ASPxCallbackPanel
         runat="server"
@@ -30,6 +62,8 @@
         <SettingsLoadingPanel Text="Carregando&amp;hellip;" />
         <PanelCollection>
             <dx:PanelContent runat="server">
+
+                <%-- FORMULARIO DE FILTRO INICIO --%>
                 <dx:ASPxRoundPanel
                     runat="server"
                     ID="pnlFiltro"
@@ -41,13 +75,13 @@
                     ShowHeader="false"
                     EnableViewState="false">
                     <Border BorderColor="Transparent" BorderStyle="None" />
-                    <ContentPaddings Padding="0px" PaddingBottom="0px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="0px" />
+                    <ContentPaddings Padding="0px" PaddingBottom="10px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="25px" />
 
-<HeaderContent BackColor="Transparent"></HeaderContent>
+                    <HeaderContent BackColor="Transparent"></HeaderContent>
                     <PanelCollection>
                         <dx:PanelContent runat="server">
                             <dx:ASPxFormLayout runat="server" ID="layoutFormulario" RequiredMarkDisplayMode="RequiredOnly"
-                                EnableViewState="false" EncodeHtml="false" UseDefaultPaddings="false" Width="100%" AllowCollapsingByHeaderClick="true">
+                                EnableViewState="false" EncodeHtml="false" UseDefaultPaddings="true" Width="100%" AllowCollapsingByHeaderClick="true">
                                 <SettingsAdaptivity AdaptivityMode="SingleColumnWindowLimit" SwitchToSingleColumnAtWindowInnerWidth="800" />
                                 <Items>
                                     <dx:LayoutGroup Caption="" ColCount="2" SettingsItemHelpTexts-Position="Bottom" GroupBoxDecoration="None" Width="100%">
@@ -113,12 +147,13 @@
                                             </dx:LayoutItem>
                                         </Items>
 
-<SettingsItemHelpTexts Position="Bottom"></SettingsItemHelpTexts>
+                                        <SettingsItemHelpTexts Position="Bottom"></SettingsItemHelpTexts>
                                     </dx:LayoutGroup>
                                 </Items>
                             </dx:ASPxFormLayout>
 
                             <br />
+                           <div style="display: flex; justify-content: flex-end; padding-right:65px;"> 
 
                             <dx:ASPxButton
                                 runat="server"
@@ -135,11 +170,105 @@
                                 Text="Limpar">
                                 <ClientSideEvents Click="function(s, e) { Callback_Client(s, 'Limpar'); }" />
                             </dx:ASPxButton>
+                               </div>
                             <br />
                         </dx:PanelContent>
                     </PanelCollection>
 
                 </dx:ASPxRoundPanel>
+                <%-- FORMULARIO DE FILTRO FIM --%>
+
+
+                <%-- FORMULARIO DE DELEÇÃO INICIO --%>
+
+                <dx:ASPxRoundPanel
+                    runat="server"
+                    ID="panelDelete"
+                    ClientInstanceName="panelDelete"
+                    HeaderText=""
+                    HeaderContent-BackColor="Transparent"
+                    Width="100%"
+                    BackColor="Transparent"
+                    ShowHeader="false"
+                    EnableViewState="false"
+                    Visible="false"
+                    >
+                    <Border BorderColor="Transparent" BorderStyle="None" />
+                    <ContentPaddings Padding="0px" PaddingBottom="10px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="25px" />
+
+                    <HeaderContent BackColor="Transparent"></HeaderContent>
+                    <PanelCollection>
+                        <dx:PanelContent runat="server">
+                            <dx:ASPxFormLayout runat="server" ID="deleteForm" RequiredMarkDisplayMode="RequiredOnly"
+                                EnableViewState="false" EncodeHtml="false" UseDefaultPaddings="true" Width="100%" AllowCollapsingByHeaderClick="true">
+                                <SettingsAdaptivity AdaptivityMode="SingleColumnWindowLimit" SwitchToSingleColumnAtWindowInnerWidth="800" />
+                                <Items>
+                                    <dx:LayoutGroup Caption="" ColCount="2" SettingsItemHelpTexts-Position="Bottom" GroupBoxDecoration="none" Width="100%">
+                                        <Items>
+                                            <dx:LayoutItem Caption="Usuario responsável" Width="100%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="usuarioReponsavel"
+                                                            ClientInstanceName="usuarioResponsavel">
+                                                        </dx:ASPxTextBox>
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="Motivo da exclusão:" Width="100%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="motivoExclusao"
+                                                            ClientInstanceName="motivoExclusao">
+                                                        </dx:ASPxTextBox>
+
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                        </Items>
+
+                                        <SettingsItemHelpTexts Position="Bottom"></SettingsItemHelpTexts>
+                                    </dx:LayoutGroup>
+                                </Items>
+                            </dx:ASPxFormLayout>
+
+                            <br />
+                           <div style="display: flex; justify-content: flex-end; padding-right:65px;"> 
+                            <dx:ASPxButton
+                                runat="server"
+                                ID="ASPxButton1"
+                                ClientInstanceName="confirmarDelecao"
+                                Text="Confirmar"
+                                HorizontalAlign="Center">
+                                <ClientSideEvents Click="function(s, e) { Callback_Delecao(s, 'ConfirmarDelecao'); }" />
+                            </dx:ASPxButton>
+
+                            <dx:ASPxButton
+                                runat="server"
+                                ID="ASPxButton2"
+                                ClientInstanceName="cancelarDelecao"
+                                Text="Cancelar"
+                                HorizontalAlign="Center">
+                                <ClientSideEvents Click="function(s, e) { Callback_Delecao(s, 'CancelarDelecao'); }" />
+                            </dx:ASPxButton>
+                               </div>
+                            <br />
+                        </dx:PanelContent>
+                    </PanelCollection>
+
+                </dx:ASPxRoundPanel>
+
+                <%-- FORMULARIO DE DELEÇÃO FIM --%>
+
 
                 <br />
 
@@ -156,17 +285,12 @@
                         </dx:MenuItem>
                     </Items>
                     <ClientSideEvents ItemClick="onClickMenu" />
+                   
                 </dx:ASPxMenu>
-
-
-
-
+                
                 <br />
-
-
-
-
                 <dx:ASPxGridView
+                    
                     ID="ASPxGridView1"
                     ClientInstanceName="ASPxGridView1"
                     OnRowUpdating="ASPxGridView1_RowUpdating"
@@ -175,14 +299,30 @@
                     OnRowInserted="ASPxGridView1_RowInserted"
                     OnRowDeleting="ASPxGridView1_RowDeleting"
                     OnRowDeleted="ASPxGridView1_RowDeleted"
-                    
                     DataSourceID="SqlPessoa"
                     runat="server"
                     Theme="Office2010Blue"
                     Width="100%"
-                    KeyFieldName="ID">
+                    KeyFieldName="ID"
+                  >
+                    
+                    <EditFormLayoutProperties>
+                        
+                        <Items> 
+                            <dx:GridViewColumnLayoutItem ColumnName="status" Visible="false" Caption="status"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="NOME" Visible="true" Caption="Nome"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="CPF" Visible="true" Caption="CPF"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="EMAIL" Visible="true" Caption="E-mail"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="DATANASCIMENTO" Visible="true" Caption="Data de Nascimento"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="CELULAR" Visible="true" Caption="Celular"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="GENERO" Visible="true" Caption="Genero"/>
+                            <dx:GridViewColumnLayoutItem ColumnName="SENHA" Visible="true" Caption="Senha" Paddings-PaddingBottom="20px"/>
+                            <dx:EditModeCommandLayoutItem HorizontalAlign="Right" ShowUpdateButton="true" ShowCancelButton="true"></dx:EditModeCommandLayoutItem>
+                        </Items>
 
-
+                            
+                    </EditFormLayoutProperties>
+                    <ClientSideEvents CustomButtonClick="onButtonClick" />
                     <SettingsDataSecurity AllowDelete="True" AllowEdit="True" AllowInsert="True" />
 
                     <SettingsPopup>
@@ -217,14 +357,23 @@
                         </CancelButton>
 
                     </SettingsCommandButton>
-
                     <Columns>
 
                         
-                        <dx:GridViewCommandColumn FooterCellStyle-HorizontalAlign="Left" SelectAllCheckboxMode="Page"  Caption="Seleção" ShowSelectCheckbox="True" VisibleIndex="0" ButtonRenderMode="button">
-<FooterCellStyle HorizontalAlign="Left"></FooterCellStyle>
+                        <dx:GridViewCommandColumn FooterCellStyle-HorizontalAlign="Left" SelectAllCheckboxMode="Page" Caption="Seleção" ShowSelectCheckbox="True" VisibleIndex="0" ButtonRenderMode="button">
+                                                        <FooterCellStyle HorizontalAlign="Left">
+                            </FooterCellStyle>
                         </dx:GridViewCommandColumn>
-                        <dx:GridViewCommandColumn Caption="ações" ShowEditButton="true" ShowDeleteButton="true" VisibleIndex="1" ButtonRenderMode="button"/>
+                        
+
+                        <dx:GridViewCommandColumn Caption="ações" ShowEditButton="true" ShowDeleteButton="false" VisibleIndex="1" ButtonRenderMode="Image">
+                            <CustomButtons>
+                                <dx:GridViewCommandColumnCustomButton ID="deleteButton">
+                                    <Image IconID="edit_delete_16x16"></Image>
+                                </dx:GridViewCommandColumnCustomButton>
+                            </CustomButtons>
+                        </dx:GridViewCommandColumn>
+
 
                         <dx:GridViewDataTextColumn FieldName="ID" Visible="false"></dx:GridViewDataTextColumn>
 
@@ -233,7 +382,7 @@
                                 <ValidationSettings
                                     Display="Dynamic"
                                     EnableCustomValidation="true">
-                                    <RegularExpression ValidationExpression="^[A-Za-z]+$" ErrorText="O campo Nome deve conter apenas letras." />
+                                    <RegularExpression ValidationExpression="^[A-Za-z\s]+$" ErrorText="O campo Nome deve conter apenas letras." />
                                     <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
                                 </ValidationSettings>
                             </PropertiesTextEdit>
@@ -308,7 +457,8 @@
                             </PropertiesTextEdit>
                         </dx:GridViewDataTextColumn>
 
-                        <dx:GridViewDataTextColumn Caption="status" FieldName="STATUS" Visible="false"></dx:GridViewDataTextColumn>
+                        <dx:GridViewDataTextColumn CellStyle-HorizontalAlign="Left" Caption="status" FieldName="STATUS">
+                        </dx:GridViewDataTextColumn>
 
                     </Columns>
 

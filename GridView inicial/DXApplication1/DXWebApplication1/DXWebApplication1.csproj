@@ -140,6 +140,7 @@
     <Compile Include="Main.master.designer.cs">
       <DependentUpon>Main.master</DependentUpon>
     </Compile>
+    <Compile Include="Models\Ocorrencia.cs" />
     <Compile Include="Models\PessoaFisica.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Root.master.cs">
