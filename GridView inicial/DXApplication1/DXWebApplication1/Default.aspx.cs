@@ -4,6 +4,7 @@ using DevExpress.DataAccess.Excel;
 using DevExpress.DataAccess.Sql;
 using DXWebApplication1.Models;
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Web.Hosting;
 
@@ -14,65 +15,34 @@ namespace DXWebApplication1
     {
 
         private readonly string _connectionString = "Data Source=IPORT\\SQLEXPRESS; Integrated Security=True; Initial Catalog=iPortCrud;";
-        
+
         private readonly DateTime date = DateTime.Now;
         private enum AcaoCallBack
         {
             Filtrar,
             Limpar,
-            Deletar,
+            AbrirFormularioDelecao,
             ConfirmarDelecao,
             CancelarDelecao,
         }
-        
+
+        private enum AcaoVisualizacaoTela
+        {
+            VizualizarFormDelecao,
+            VizualizarTelaPrincipal,
+        }
+
+ 
+
         protected void Page_Load(object sender, EventArgs e)
         {
             //SqlPessoa_Init(null, null);
             //ASPxGridView1.DataBind();
 
         }
-        protected void SqlPessoa_Init(object sender, EventArgs e)
-        {
-
-            string strConsulta = $@"select 
-	                                    id as ID,
-	                                    nome as NOME,
-	                                    cpf as CPF,
-	                                    email as EMAIL,
-	                                    data_nascimento as DATANASCIMENTO,
-	                                    genero as GENERO,
-	                                    celular as CELULAR,
-	                                    senha as SENHA,
-                                        status as STATUS
-
-                                from iPortCrud.dbo.usuarios
-                                  where id is not null ";
-
-            if (!string.IsNullOrEmpty(PesquisaNomeCliente.Text))
-                strConsulta += $@"and nome like '%{PesquisaNomeCliente.Text}%'";
-
-            if (!string.IsNullOrEmpty(PesquisaCPFCliente.Text))
-                strConsulta += $@"and cpf like '%{PesquisaCPFCliente.Text}%'";
 
 
-            if (!string.IsNullOrEmpty(PesquisaDataInicio.Text) && (!string.IsNullOrEmpty(PesquisaDataFim.Text)))
-            {
-                strConsulta += $@"and data_nascimento BETWEEN '{PesquisaDataInicio.Text}' AND '{PesquisaDataFim.Text}' ";
-            }
 
-            else if (!string.IsNullOrEmpty(PesquisaDataInicio.Text) && (string.IsNullOrEmpty(PesquisaDataFim.Text)))
-            {
-                strConsulta += $@"and data_nascimento >= '{PesquisaDataInicio.Text}' ";
-            }
-
-            SqlPessoa.SelectCommand = strConsulta;
-            ASPxGridView1.DataBind();
-
-        }
-        protected void SqlPessoa_Selecting(object sender, System.Web.UI.WebControls.SqlDataSourceSelectingEventArgs e)
-        {
-            //e.Command.Parameters["@NomeUsuario"].Value = !string.IsNullOrEmpty(PesquisaNomeCliente.Text) ? PesquisaNomeCliente.Text.ToString(): " ";
-        }
         protected void CallbackPanel_Callback(object sender, DevExpress.Web.CallbackEventArgsBase e)
         {
 
@@ -81,62 +51,90 @@ namespace DXWebApplication1
             {
                 delete_Fields();
             }
-
             else if (e.Parameter.Equals(AcaoCallBack.Filtrar.ToString()))
             {
                 search_CPF();
             }
-
-            else if (e.Parameter.Equals(AcaoCallBack.Deletar.ToString())) 
+            else if (e.Parameter.Equals(AcaoCallBack.AbrirFormularioDelecao.ToString()))
             {
-                panelDelete.Visible = true;
-                pnlFiltro.Visible = false;
-                Menu.Visible = false;
-                ASPxGridView1.Visible = false;
-
+                visualizacaoTela(AcaoVisualizacaoTela.VizualizarFormDelecao);
                 limparCamposDelete();
-
-
             }
-
             else if (e.Parameter.Equals(AcaoCallBack.ConfirmarDelecao.ToString()))
             {
-                Int32 idUsuario = Convert.ToInt32(HiddenIdUsuario.Get("IDUsuario").ToString());
+                if (motivoExclusao.Text != string.Empty && usuarioReponsavel.Text != string.Empty)
+                {
+                    Int32 idUsuario = Convert.ToInt32(HiddenIdUsuario.Get("IDUsuario").ToString());
+                    Ocorrencia ocorrencia = new Ocorrencia();
+                    ocorrencia.Data = date;
+                    ocorrencia.Descricao = motivoExclusao.Text;
+                    ocorrencia.Responsavel = usuarioReponsavel.Text;
+                    ocorrencia.Usuario_id = idUsuario;
 
-                Ocorrencia ocorrencia = new Ocorrencia();
-                ocorrencia.Data = date;
-                ocorrencia.Descricao = motivoExclusao.Text;
-                ocorrencia.Responsavel = usuarioReponsavel.Text;
-                ocorrencia.Usuario_id = idUsuario;
-
-                DeleteData(ocorrencia.Usuario_id, ocorrencia.Data, ocorrencia.Descricao, ocorrencia.Responsavel);
-
-                ASPxGridView1.DataBind();
-
-                limparCamposDelete();
+                    DeleteData(ocorrencia.Usuario_id, ocorrencia.Data, ocorrencia.Descricao, ocorrencia.Responsavel);
+                    ASPxGridView1.DataBind();
+                    limparCamposDelete();
+                }
+                else
+                {
+                    visualizacaoTela(AcaoVisualizacaoTela.VizualizarFormDelecao);
+                    limparCamposDelete();
+                }
 
             }
-            else if(e.Parameter.Equals(AcaoCallBack.CancelarDelecao.ToString()))
+            else if (e.Parameter.Equals(AcaoCallBack.CancelarDelecao.ToString()))
             {
-                panelDelete.Visible = false;
-                pnlFiltro.Visible = true;
-                Menu.Visible = true;
-                ASPxGridView1.Visible = true;
-
+                visualizacaoTela(AcaoVisualizacaoTela.VizualizarTelaPrincipal);
                 limparCamposDelete();
-   
-
-
             }
-
-
         }
 
-        protected void limparCamposDelete ()
+        #region Metodos da página (Funções)
+        protected void limparCamposDelete()
         {
             motivoExclusao.Text = "";
             usuarioReponsavel.Text = "";
         }
+        private void visualizacaoTela(AcaoVisualizacaoTela acaoVisualizacaoTela)
+        {
+
+            switch (acaoVisualizacaoTela)
+            {
+                case AcaoVisualizacaoTela.VizualizarFormDelecao:
+                    panelDelete.Visible = true;
+                    pnlFiltro.Visible = false;
+                    Menu.Visible = false;
+                    ASPxGridView1.Visible = false;
+                    break;
+
+                case AcaoVisualizacaoTela.VizualizarTelaPrincipal:
+                    panelDelete.Visible = false;
+                    pnlFiltro.Visible = true;
+                    Menu.Visible = true;
+                    ASPxGridView1.Visible = true;
+                    break;
+
+            }
+
+        }
+        public void search_CPF()
+        {
+
+            SqlPessoa_Init(null, null);
+            ASPxGridView1.DataBind();
+        }
+        public void delete_Fields()
+        {
+            PesquisaNomeCliente.Text = "";
+            PesquisaDataInicio.Text = "";
+            PesquisaDataFim.Text = "";
+            PesquisaCPFCliente.Text = "";
+
+            ASPxGridView1.DataBind();
+        }
+        #endregion
+
+        #region Ações do Grid
         protected void ASPxGridView1_RowInserting(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
         {
             var pessoaFisica = new PessoaFisica();
@@ -223,31 +221,57 @@ namespace DXWebApplication1
             }
 
         }
-        protected void btnFiltro_Click(object sender, EventArgs e)
-        {
-            SqlPessoa_Init(null, null);
+        #endregion
 
-            //Função DataBind é utilizada para DAR UM REFRESH NO GRID
-            ASPxGridView1.DataBind();
-        }
-        public void search_CPF()
+        #region DataSource
+        protected void SqlPessoa_Init(object sender, EventArgs e)
         {
 
-            SqlPessoa_Init(null, null);
-            ASPxGridView1.DataBind();
-        }
-        public void delete_Fields()
-        {
-            PesquisaNomeCliente.Text = "";
-            PesquisaDataInicio.Text = "";
-            PesquisaDataFim.Text = "";
-            PesquisaCPFCliente.Text = "";
+            string strConsulta = $@"select 
+	                                    id as ID,
+	                                    nome as NOME,
+	                                    cpf as CPF,
+	                                    email as EMAIL,
+	                                    data_nascimento as DATANASCIMENTO,
+	                                    genero as GENERO,
+	                                    celular as CELULAR,
+	                                    senha as SENHA,
+                                        status as STATUS
 
+                                from iPortCrud.dbo.usuarios
+                                  where id is not null ";
+
+            if (!string.IsNullOrEmpty(PesquisaNomeCliente.Text))
+                strConsulta += $@"and nome like '%{PesquisaNomeCliente.Text}%'";
+
+            if (!string.IsNullOrEmpty(PesquisaCPFCliente.Text))
+                strConsulta += $@"and cpf like '%{PesquisaCPFCliente.Text}%'";
+
+
+            if (!string.IsNullOrEmpty(PesquisaDataInicio.Text) && (!string.IsNullOrEmpty(PesquisaDataFim.Text)))
+            {
+                strConsulta += $@"and data_nascimento BETWEEN '{PesquisaDataInicio.Text}' AND '{PesquisaDataFim.Text}' ";
+            }
+
+            else if (!string.IsNullOrEmpty(PesquisaDataInicio.Text) && (string.IsNullOrEmpty(PesquisaDataFim.Text)))
+            {
+                strConsulta += $@"and data_nascimento >= '{PesquisaDataInicio.Text}' ";
+            }
+
+            SqlPessoa.SelectCommand = strConsulta;
             ASPxGridView1.DataBind();
+
         }
+        protected void SqlPessoa_Selecting(object sender, System.Web.UI.WebControls.SqlDataSourceSelectingEventArgs e)
+        {
+            //e.Command.Parameters["@NomeUsuario"].Value = !string.IsNullOrEmpty(PesquisaNomeCliente.Text) ? PesquisaNomeCliente.Text.ToString(): " ";
+        }
+        #endregion
+
+        #region Ações para inserção no banco
         protected void DeleteData(int id, DateTime? data, string descricao, string responsavel)
         {
-            
+
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -268,8 +292,8 @@ namespace DXWebApplication1
 
                 SqlCommand commandUpdate = new SqlCommand(queryUpdate, connection);
                 commandUpdate.ExecuteNonQuery();
-                
-                
+
+
                 SqlCommand commandInsert = new SqlCommand(queryInsert, connection);
                 commandInsert.ExecuteNonQuery();
 
@@ -330,7 +354,40 @@ namespace DXWebApplication1
 
             }
         }
+        #endregion
+
+        protected void btnFiltro_Click(object sender, EventArgs e)
+        {
+            SqlPessoa_Init(null, null);
+
+            //Função DataBind é utilizada para DAR UM REFRESH NO GRID
+            ASPxGridView1.DataBind();
+        }
 
 
+        enum Genero
+        {
+            Masculino = 0,
+            Feminino = 1,
+            NaoBinario = 2
+        }
+
+        public DataTable GetAllGenders()
+        {
+
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Value", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
+
+            foreach (var value in Enum.GetValues(typeof(Genero)))
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = (int)value;
+                row["Name"] = Enum.GetName(typeof(Genero), value);
+                dataTable.Rows.Add(row);
+            }
+
+            return dataTable;
+        }
     }
 }

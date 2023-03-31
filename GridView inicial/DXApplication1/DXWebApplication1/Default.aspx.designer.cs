@@ -105,6 +105,33 @@ namespace DXWebApplication1
         protected global::DevExpress.Web.ASPxButton btn_delete_Fields;
 
         /// <summary>
+        /// Controle Menu.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxMenu Menu;
+
+        /// <summary>
+        /// Controle ASPxGridView1.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxGridView ASPxGridView1;
+
+        /// <summary>
+        /// Controle deleteButton.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.GridViewCommandColumnCustomButton deleteButton;
+
+        /// <summary>
         /// Controle panelDelete.
         /// </summary>
         /// <remarks>
@@ -159,33 +186,6 @@ namespace DXWebApplication1
         protected global::DevExpress.Web.ASPxButton ASPxButton2;
 
         /// <summary>
-        /// Controle Menu.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
-        /// </remarks>
-        protected global::DevExpress.Web.ASPxMenu Menu;
-
-        /// <summary>
-        /// Controle ASPxGridView1.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
-        /// </remarks>
-        protected global::DevExpress.Web.ASPxGridView ASPxGridView1;
-
-        /// <summary>
-        /// Controle deleteButton.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
-        /// </remarks>
-        protected global::DevExpress.Web.GridViewCommandColumnCustomButton deleteButton;
-
-        /// <summary>
         /// Controle SqlPessoa.
         /// </summary>
         /// <remarks>
@@ -193,5 +193,14 @@ namespace DXWebApplication1
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.SqlDataSource SqlPessoa;
+
+        /// <summary>
+        /// Controle odsGenero.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ObjectDataSource odsGenero;
     }
 }
