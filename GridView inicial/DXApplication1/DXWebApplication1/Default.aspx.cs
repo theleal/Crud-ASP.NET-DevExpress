@@ -2,11 +2,15 @@ using DevExpress.DashboardCommon;
 using DevExpress.DashboardWeb;
 using DevExpress.DataAccess.Excel;
 using DevExpress.DataAccess.Sql;
+using DevExpress.Web;
 using DXWebApplication1.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Web.Hosting;
+using System.Web.UI.WebControls;
 
 namespace DXWebApplication1
 {
@@ -15,8 +19,8 @@ namespace DXWebApplication1
     {
 
         private readonly string _connectionString = "Data Source=IPORT\\SQLEXPRESS; Integrated Security=True; Initial Catalog=iPortCrud;";
-
         private readonly DateTime date = DateTime.Now;
+
         private enum AcaoCallBack
         {
             Filtrar,
@@ -25,24 +29,17 @@ namespace DXWebApplication1
             ConfirmarDelecao,
             CancelarDelecao,
         }
-
+        
         private enum AcaoVisualizacaoTela
         {
             VizualizarFormDelecao,
             VizualizarTelaPrincipal,
         }
-
- 
-
         protected void Page_Load(object sender, EventArgs e)
         {
             //SqlPessoa_Init(null, null);
             //ASPxGridView1.DataBind();
-
         }
-
-
-
         protected void CallbackPanel_Callback(object sender, DevExpress.Web.CallbackEventArgsBase e)
         {
 
@@ -57,8 +54,23 @@ namespace DXWebApplication1
             }
             else if (e.Parameter.Equals(AcaoCallBack.AbrirFormularioDelecao.ToString()))
             {
+
                 visualizacaoTela(AcaoVisualizacaoTela.VizualizarFormDelecao);
                 limparCamposDelete();
+
+                //var rowStatus = Convert.ToInt32(HiddenStatusUsuario.Get("StatusValue").ToString());
+                //int statusValue = (int)ASPxGridView1.GetRowValues(rowStatus, "STATUS");
+                //if (statusValue == 1)
+                //{
+                   
+                //} 
+                //else if (statusValue == 2)
+                //{
+
+                //    ASPxCallbackPanel cp = sender as ASPxCallbackPanel;
+                //    cp.JSProperties["cpAlert"] = "javascript:showMessageBox()";
+                //}
+
             }
             else if (e.Parameter.Equals(AcaoCallBack.ConfirmarDelecao.ToString()))
             {
@@ -88,8 +100,6 @@ namespace DXWebApplication1
                 limparCamposDelete();
             }
         }
-
-        #region Metodos da página (Funções)
         protected void limparCamposDelete()
         {
             motivoExclusao.Text = "";
@@ -132,9 +142,6 @@ namespace DXWebApplication1
 
             ASPxGridView1.DataBind();
         }
-        #endregion
-
-        #region Ações do Grid
         protected void ASPxGridView1_RowInserting(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
         {
             var pessoaFisica = new PessoaFisica();
@@ -221,9 +228,6 @@ namespace DXWebApplication1
             }
 
         }
-        #endregion
-
-        #region DataSource
         protected void SqlPessoa_Init(object sender, EventArgs e)
         {
 
@@ -266,9 +270,6 @@ namespace DXWebApplication1
         {
             //e.Command.Parameters["@NomeUsuario"].Value = !string.IsNullOrEmpty(PesquisaNomeCliente.Text) ? PesquisaNomeCliente.Text.ToString(): " ";
         }
-        #endregion
-
-        #region Ações para inserção no banco
         protected void DeleteData(int id, DateTime? data, string descricao, string responsavel)
         {
 
@@ -354,7 +355,6 @@ namespace DXWebApplication1
 
             }
         }
-        #endregion
 
         protected void btnFiltro_Click(object sender, EventArgs e)
         {
@@ -363,18 +363,14 @@ namespace DXWebApplication1
             //Função DataBind é utilizada para DAR UM REFRESH NO GRID
             ASPxGridView1.DataBind();
         }
-
-
         enum Genero
         {
             Masculino = 0,
             Feminino = 1,
             NaoBinario = 2
         }
-
         public DataTable GetAllGenders()
         {
-
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("Value", typeof(int));
             dataTable.Columns.Add("Name", typeof(string));
@@ -388,6 +384,46 @@ namespace DXWebApplication1
             }
 
             return dataTable;
+        }
+        enum Status
+        {
+            Ativo = 1,
+            Excluido = 2,
+        }
+        public DataTable GetAllStatus()
+        {
+
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Value", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
+
+            foreach (var value in Enum.GetValues(typeof(Status)))
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = (int)value;
+                row["Name"] = Enum.GetName(typeof(Status), value);
+                dataTable.Rows.Add(row);
+
+            }
+
+            return dataTable;
+        }
+
+        protected void ASPxGridView1_CustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
+        {
+
+
+            if(e.ButtonID == "deleteButton")
+            {
+                Int32 status = Convert.ToInt32(ASPxGridView1.GetRowValues(e.VisibleIndex, "STATUS"));
+                
+                if (status == 2)
+                {
+                    e.Enabled = false;
+                }
+
+            }
+
         }
     }
 }

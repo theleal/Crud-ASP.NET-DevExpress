@@ -21,44 +21,58 @@
 
         function onButtonClick(s, e) {
             var fields = s.GetRowKey(e.visibleIndex);
-
             if (e.buttonID == "deleteButton") {
                 HiddenIdUsuario.Set("IDUsuario", fields);
+
+/*                HiddenStatusUsuario.Set("StatusValue", e.visibleIndex)*/
+
                 CallbackPanel.PerformCallback("AbrirFormularioDelecao");
                 console.log(e.buttonID)
                 e.processOnServer = false;
+
+
             }
             ASPxGridView1.SetVisible(true);
         }
 
 
         function Callback_Delecao(s, e) {
-
             CallbackPanel.PerformCallback(e)
             e.cancel = true;
             e.processoOnServer = false;
-
         }
 
+        function showMessageBox()
+        {
+            alert("usuario ja excluido")
+        }
 
-        //function Callback_Delecao(s, e) {
+        function CallbackPanel_endcallback(s, e) {
+            try
+            {
+                if (s.cpAlert !== "undefined") {
+                    eval(s.cpAlert)
+                }
+            }
+            catch
+            {
 
-        //    if (e.buttonID == "deleteButton") {
-        //        panelDelete.SetVisible(false)
-        //        e.
-        //    }
-        //}
+            }
+        }
 
     </script>
 
-    <dx:ASPxHiddenField ClientInstanceName="HiddenIdUsuario" ID="HiddenIdUsuario" runat="server"></dx:ASPxHiddenField>
+    <dx:ASPxHiddenField ClientInstanceName="HiddenIdUsuario" ID="HiddenIdUsuario" runat="server"/>
+    <%--<dx:ASPxHiddenField ClientInstanceName="HiddenStatusUsuario" ID="HiddenStatusUsuario" runat="server"/>--%>
+
 
     <dx:ASPxCallbackPanel
         runat="server"
         ID="CallbackPanel"
         ClientInstanceName="CallbackPanel"
         RenderMode="Div"
-        OnCallback="CallbackPanel_Callback">
+        OnCallback="CallbackPanel_Callback"
+        ClientSideEvents-EndCallback="CallbackPanel_endcallback">
         <SettingsLoadingPanel Text="Carregando&amp;hellip;" />
         <PanelCollection>
             <dx:PanelContent runat="server">
@@ -203,12 +217,16 @@
                     OnRowInserted="ASPxGridView1_RowInserted"
                     OnRowDeleting="ASPxGridView1_RowDeleting"
                     OnRowDeleted="ASPxGridView1_RowDeleted"
+                    OnCustomButtonInitialize="ASPxGridView1_CustomButtonInitialize"
                     DataSourceID="SqlPessoa"
                     AutoGenerateColumns="false"
                     runat="server"
                     Theme="Office2010Blue"
                     Width="100%"
-                    KeyFieldName="ID">
+                    KeyFieldName="ID"
+                    Settings-ShowFilterRow="true"
+                    Settings-AutoFilterCondition="Contains"
+                    >
                     <EditFormLayoutProperties ColumnCount="2">
                         <Items>
 
@@ -220,7 +238,7 @@
                             <dx:GridViewColumnLayoutItem ColumnName="CELULAR" Visible="true" Caption="Celular" />
                             <dx:GridViewColumnLayoutItem ColumnName="GENERO" Visible="true" Caption="Genero" />
                             <dx:GridViewColumnLayoutItem ColumnName="SENHA" Visible="true" Caption="Senha" Paddings-PaddingBottom="20px" />
-                            <dx:EditModeCommandLayoutItem HorizontalAlign="Right" ShowUpdateButton="true" ShowCancelButton="true"/>
+                            <dx:EditModeCommandLayoutItem HorizontalAlign="Right" ShowUpdateButton="true" ShowCancelButton="true" />
                         </Items>
                     </EditFormLayoutProperties>
 
@@ -325,11 +343,11 @@
                             </PropertiesDateEdit>
                         </dx:GridViewDataDateColumn>
 
-                         <dx:GridViewDataComboBoxColumn FieldName="GENERO" Caption="Genero">
+                        <dx:GridViewDataComboBoxColumn FieldName="GENERO" Caption="Genero">
                             <PropertiesComboBox DataSourceID="odsGenero"
-                                                ValueType="System.Int32"
-                                                ValueField="Value"
-                                                TextField="Name" />
+                                ValueType="System.Int32"
+                                ValueField="Value"
+                                TextField="Name" />
                         </dx:GridViewDataComboBoxColumn>
 
                         <dx:GridViewDataTextColumn Caption="Celular" FieldName="CELULAR">
@@ -354,13 +372,14 @@
                             </PropertiesTextEdit>
                         </dx:GridViewDataTextColumn>
 
-                        <dx:GridViewDataTextColumn CellStyle-HorizontalAlign="Left" Caption="Status" FieldName="STATUS">
-                        </dx:GridViewDataTextColumn>
-                        
+                        <dx:GridViewDataComboBoxColumn FieldName="STATUS" Caption="Status" PropertiesComboBox-DataSourceID="odsStatus">
+                            <PropertiesComboBox ValueField="Value" ValueType="System.Int32" TextField="Name" />
+                        </dx:GridViewDataComboBoxColumn>
+
                     </Columns>
 
 
-                </dx:ASPxGridView>                
+                </dx:ASPxGridView>
 
                 <%-- FORMULARIO DE DELEÇÃO INICIO --%>
                 <dx:ASPxRoundPanel
@@ -413,7 +432,7 @@
                                                             runat="server"
                                                             ID="motivoExclusao"
                                                             ClientInstanceName="motivoExclusao">
-                                                             <ValidationSettings>
+                                                            <ValidationSettings>
                                                                 <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
                                                             </ValidationSettings>
 
@@ -456,7 +475,6 @@
 
                 </dx:ASPxRoundPanel>
                 <%-- FORMULARIO DE DELEÇÃO FIM --%>
-
             </dx:PanelContent>
         </PanelCollection>
     </dx:ASPxCallbackPanel>
@@ -473,15 +491,14 @@
         runat="server"
         ID="odsGenero"
         SelectMethod="GetAllGenders"
-        TypeName ="DXWebApplication1.Default"
-        > 
-
+        TypeName="DXWebApplication1.Default">
     </asp:ObjectDataSource>
 
-
-
-
-
-
+    <asp:ObjectDataSource
+        runat="server"
+        ID="odsStatus"
+        SelectMethod="GetAllStatus"
+        TypeName="DXWebApplication1.Default">
+    </asp:ObjectDataSource>
 
 </asp:Content>
