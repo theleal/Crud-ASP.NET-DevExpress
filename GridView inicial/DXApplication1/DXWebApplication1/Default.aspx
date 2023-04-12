@@ -14,7 +14,7 @@
 
         function onClickMenu(s, e) {
             if (e.item.name == "CRIAR") {
-                ASPxGridView1.AddNewRow();
+                CallbackPanel.PerformCallback("AbrirFormularioCriacao");
                 e.processoOnServer = false;
             }
         }
@@ -24,7 +24,7 @@
             if (e.buttonID == "deleteButton") {
                 HiddenIdUsuario.Set("IDUsuario", fields);
 
-/*                HiddenStatusUsuario.Set("StatusValue", e.visibleIndex)*/
+                /*                HiddenStatusUsuario.Set("StatusValue", e.visibleIndex)*/
 
                 CallbackPanel.PerformCallback("AbrirFormularioDelecao");
                 console.log(e.buttonID)
@@ -40,16 +40,24 @@
             CallbackPanel.PerformCallback(e)
             e.cancel = true;
             e.processoOnServer = false;
+           
         }
 
-        function showMessageBox()
-        {
+
+        function Callback_Criacao(s, e) {
+            CallbackPanel.PerformCallback(e)
+            e.cancel = true;
+            e.processoOnServer = false;
+            console.log(e)
+
+        }
+
+        function showMessageBox() {
             alert("usuario ja excluido")
         }
 
         function CallbackPanel_endcallback(s, e) {
-            try
-            {
+            try {
                 if (s.cpAlert !== "undefined") {
                     eval(s.cpAlert)
                 }
@@ -60,11 +68,17 @@
             }
         }
 
+        function onClickAdd(s, e)
+        {
+            if (e.item.name == "ADICIONAR") {
+                DependentesGrid.AddNewRow();
+                e.processoOnServer = false;
+            }
+        }
+
     </script>
 
-    <dx:ASPxHiddenField ClientInstanceName="HiddenIdUsuario" ID="HiddenIdUsuario" runat="server"/>
-    <%--<dx:ASPxHiddenField ClientInstanceName="HiddenStatusUsuario" ID="HiddenStatusUsuario" runat="server"/>--%>
-
+    <dx:ASPxHiddenField ClientInstanceName="HiddenIdUsuario" ID="HiddenIdUsuario" runat="server" />
 
     <dx:ASPxCallbackPanel
         runat="server"
@@ -91,10 +105,12 @@
                     <Border BorderColor="Transparent" BorderStyle="None" />
                     <ContentPaddings Padding="0px" PaddingBottom="10px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="25px" />
 
-                    <HeaderContent BackColor="Transparent"></HeaderContent>
+
+                    <HeaderContent BackColor="Transparent" />
                     <PanelCollection>
                         <dx:PanelContent runat="server">
-                            <dx:ASPxFormLayout runat="server" ID="layoutFormulario" RequiredMarkDisplayMode="RequiredOnly"
+                             <dx:ASPxFormLayout
+                                runat="server" ID="layoutFormulario" RequiredMarkDisplayMode="RequiredOnly"
                                 EnableViewState="false" EncodeHtml="false" UseDefaultPaddings="true" Width="100%" AllowCollapsingByHeaderClick="true">
                                 <SettingsAdaptivity AdaptivityMode="SingleColumnWindowLimit" SwitchToSingleColumnAtWindowInnerWidth="800" />
                                 <Items>
@@ -191,7 +207,10 @@
 
                 </dx:ASPxRoundPanel>
                 <%-- FORMULARIO DE FILTRO FIM --%>
+
+
                 <br />
+                <%-- BOTAO MENU CRIAR INICIO --%>
                 <dx:ASPxMenu
                     runat="server"
                     ClientInstanceName="Menu"
@@ -201,13 +220,17 @@
                     ID="Menu">
                     <Items>
                         <dx:MenuItem Text="Criar" Name="CRIAR">
-                            <Image IconID="actions_insert_16x16"></Image>
+                            <Image IconID="actions_insert_16x16" />
                         </dx:MenuItem>
                     </Items>
                     <ClientSideEvents ItemClick="onClickMenu" />
 
                 </dx:ASPxMenu>
                 <br />
+                <%-- BOTAO MENU CRIAR FIM --%>
+
+
+                <%-- GRIDVIEW INICIO --%>
                 <dx:ASPxGridView
                     ID="ASPxGridView1"
                     ClientInstanceName="ASPxGridView1"
@@ -225,8 +248,7 @@
                     Width="100%"
                     KeyFieldName="ID"
                     Settings-ShowFilterRow="true"
-                    Settings-AutoFilterCondition="Contains"
-                    >
+                    Settings-AutoFilterCondition="Like">
                     <EditFormLayoutProperties ColumnCount="2">
                         <Items>
 
@@ -246,34 +268,24 @@
                     <SettingsDataSecurity AllowDelete="True" AllowEdit="True" AllowInsert="True" />
 
                     <SettingsPopup>
-                        <HeaderFilter MinHeight="140px"></HeaderFilter>
+                        <HeaderFilter MinHeight="140px" />
                     </SettingsPopup>
 
                     <SettingsCommandButton>
                         <EditButton ButtonType="Image">
-                            <Image
-                                ToolTip="Editar"
-                                IconID="edit_edit_16x16">
-                            </Image>
+                            <Image ToolTip="Editar" IconID="edit_edit_16x16" />
                         </EditButton>
 
                         <DeleteButton ButtonType="Image">
-                            <Image
-                                ToolTip="Excluir"
-                                IconID="edit_delete_16x16">
-                            </Image>
+                            <Image ToolTip="Excluir" IconID="edit_delete_16x16" />
                         </DeleteButton>
 
-                        <UpdateButton
-                            ButtonType="Button"
-                            Text="Confirmar">
-                            <Image IconID="actions_apply_16x16"></Image>
+                        <UpdateButton ButtonType="Button" Text="Confirmar">
+                            <Image IconID="actions_apply_16x16" />
                         </UpdateButton>
 
-                        <CancelButton
-                            ButtonType="Button"
-                            Text="Cancelar">
-                            <Image IconID="actions_cancel_16x16"></Image>
+                        <CancelButton ButtonType="Button" Text="Cancelar">
+                            <Image IconID="actions_cancel_16x16" />
                         </CancelButton>
 
                     </SettingsCommandButton>
@@ -281,15 +293,14 @@
 
 
                         <dx:GridViewCommandColumn FooterCellStyle-HorizontalAlign="Left" SelectAllCheckboxMode="Page" Caption="Seleção" ShowSelectCheckbox="True" VisibleIndex="0" ButtonRenderMode="button">
-                            <FooterCellStyle HorizontalAlign="Left">
-                            </FooterCellStyle>
+                            <FooterCellStyle HorizontalAlign="Left" />
                         </dx:GridViewCommandColumn>
 
 
                         <dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="false" VisibleIndex="1" ButtonRenderMode="Image">
                             <CustomButtons>
                                 <dx:GridViewCommandColumnCustomButton ID="deleteButton">
-                                    <Image IconID="edit_delete_16x16"></Image>
+                                    <Image IconID="edit_delete_16x16" />
                                 </dx:GridViewCommandColumnCustomButton>
                             </CustomButtons>
                         </dx:GridViewCommandColumn>
@@ -324,7 +335,8 @@
                                 <ValidationSettings
                                     Display="Dynamic"
                                     EnableCustomValidation="true">
-                                    <RegularExpression ValidationExpression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                    <RegularExpression
+                                        ValidationExpression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                                         ErrorText="Por favor, insira um endereço de email válido." />
                                     <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
                                 </ValidationSettings>
@@ -380,6 +392,8 @@
 
 
                 </dx:ASPxGridView>
+                <%-- GRIDVIEW FIM --%>
+
 
                 <%-- FORMULARIO DE DELEÇÃO INICIO --%>
                 <dx:ASPxRoundPanel
@@ -396,7 +410,7 @@
                     <Border BorderColor="Transparent" BorderStyle="None" />
                     <ContentPaddings Padding="0px" PaddingBottom="10px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="25px" />
 
-                    <HeaderContent BackColor="Transparent"></HeaderContent>
+                    <HeaderContent BackColor="Transparent" />
                     <PanelCollection>
                         <dx:PanelContent runat="server">
                             <dx:ASPxFormLayout runat="server" ID="deleteForm" RequiredMarkDisplayMode="RequiredOnly"
@@ -444,7 +458,7 @@
 
                                         </Items>
 
-                                        <SettingsItemHelpTexts Position="Bottom"></SettingsItemHelpTexts>
+                                        <SettingsItemHelpTexts Position="Bottom" />
                                     </dx:LayoutGroup>
                                 </Items>
                             </dx:ASPxFormLayout>
@@ -475,6 +489,389 @@
 
                 </dx:ASPxRoundPanel>
                 <%-- FORMULARIO DE DELEÇÃO FIM --%>
+
+
+                <%-- FORMULARIO DE CRIACAO INICIO --%>
+                <dx:ASPxRoundPanel
+                    runat="server"
+                    ID="CreatePanel"
+                    ClientInstanceName="CreatePanel"
+                    HeaderText=""
+                    HeaderContent-BackColor="Transparent"
+                    Width="100%"
+                    BackColor="Transparent"
+                    ShowHeader="false"
+                    EnableViewState="false"
+                    Visible="false"
+                    >
+                    <Border BorderColor="Transparent" BorderStyle="None" />
+                    <ContentPaddings Padding="0px" PaddingBottom="10px" PaddingLeft="0px" PaddingRight="0px" PaddingTop="25px" />
+
+                    <HeaderContent BackColor="Transparent" />
+                    <PanelCollection>
+                        <dx:PanelContent runat="server">
+                            <dx:ASPxFormLayout 
+                                runat="server" 
+                                ID="createForm" 
+                                RequiredMarkDisplayMode="RequiredOnly"
+                                EncodeHtml="false" 
+                                UseDefaultPaddings="true" 
+                                Width="100%" 
+                                AllowCollapsingByHeaderClick="true"
+                                EnableViewState="false" 
+                                >
+
+
+
+                                <SettingsAdaptivity AdaptivityMode="SingleColumnWindowLimit" SwitchToSingleColumnAtWindowInnerWidth="800" />
+                                <Items>
+                                    <dx:LayoutGroup  ColCount="2" ColumnCount="2" SettingsItemHelpTexts-Position="Bottom" GroupBoxDecoration="none" Width="100%">
+                                        <Items>
+                                            <dx:LayoutItem Caption="Nome" Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="nomePessoaFisica"
+                                                            ClientInstanceName="nomePessoaFisica">
+                                                            <ValidationSettings
+                                                                Display="Dynamic"
+                                                                EnableCustomValidation="true">
+                                                                <RegularExpression ValidationExpression="^[A-Za-z\s]+$" ErrorText="O campo Nome deve conter apenas letras." />
+                                                                <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                                            </ValidationSettings>
+
+                                                        </dx:ASPxTextBox>
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="CPF:" Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="cpfPessoaFisica"
+                                                            ClientInstanceName="cpfPessoaFisica">
+                                                            <ValidationSettings
+                                                                Display="Dynamic"
+                                                                EnableCustomValidation="true">
+                                                                <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                                            </ValidationSettings>
+                                                            <MaskSettings Mask="000\.000\.000-00" />
+                                                        </dx:ASPxTextBox>
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="E-mail:" Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="emailPessoaFisica"
+                                                            ClientInstanceName="emailPessoaFisica">
+                                                            <ValidationSettings
+                                                                Display="Dynamic"
+                                                                EnableCustomValidation="true">
+                                                                <RegularExpression
+                                                                    ValidationExpression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                                                    ErrorText="Por favor, insira um endereço de email válido." />
+                                                                <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                                            </ValidationSettings>
+
+                                                        </dx:ASPxTextBox>
+
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="Data de Nascimento: " Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxDateEdit    
+                                                            runat="server"
+                                                            ID="DataNasc"
+                                                            ClientInstanceName="DataNasc" 
+                                                            UseMaskBehavior="true"
+                                                            EditFormatString="dd/MM/yyyy">
+                                                            <ValidationSettings
+                                                                Display="Dynamic"
+                                                                EnableCustomValidation="true">
+                                                                <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                                            </ValidationSettings>
+
+                                                        </dx:ASPxDateEdit>
+
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="Genero" Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxComboBox
+                                                            ID="cbGenero"
+                                                            runat="server"
+                                                            DataSourceID="odsGenero"
+                                                            ValueField="Value"
+                                                            TextField="Name">
+                                                        </dx:ASPxComboBox>
+
+
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="Celular" Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="celularPessoaFisica"
+                                                            ClientInstanceName="celularPessoaFisica">
+                                                            <ValidationSettings>
+                                                                <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                                            </ValidationSettings>
+                                                            <MaskSettings Mask="(00) 00000-0000" />
+
+                                                        </dx:ASPxTextBox>
+
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                            <dx:LayoutItem Caption="Senha" Width="50%">
+                                                <CaptionStyle Font-Bold="true" />
+                                                <LayoutItemNestedControlCollection>
+                                                    <dx:LayoutItemNestedControlContainer>
+
+                                                        <dx:ASPxTextBox
+                                                            runat="server"
+                                                            ID="senhaPessoaFisica"
+                                                            ClientInstanceName="senhaPessoaFisica">
+                                                            <ValidationSettings>
+                                                                <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                                            </ValidationSettings>
+
+                                                        </dx:ASPxTextBox>
+
+                                                    </dx:LayoutItemNestedControlContainer>
+                                                </LayoutItemNestedControlCollection>
+                                            </dx:LayoutItem>
+
+                                        </Items>
+
+                                        <SettingsItemHelpTexts Position="Bottom" />
+                                    </dx:LayoutGroup>
+                                </Items>
+                            </dx:ASPxFormLayout>
+
+                            <br />
+                            <div style="display: flex; justify-content: flex-end; padding-right: 65px;">
+                                <dx:ASPxButton
+                                    runat="server"
+                                    ID="ASPxButton3"
+                                    ClientInstanceName="confirmarDelecao"
+                                    Text="Confirmar"
+                                    HorizontalAlign="Center">
+                                    <ClientSideEvents Click="function(s, e) { Callback_Criacao(s, 'ConfirmarCriacao'); }" />
+                                </dx:ASPxButton>
+
+                                <dx:ASPxButton
+                                    runat="server"
+                                    ID="ASPxButton4"
+                                    ClientInstanceName="cancelarDelecao"
+                                    Text="Cancelar"
+                                    HorizontalAlign="Center">
+                                    <ClientSideEvents Click="function(s, e) { Callback_Criacao(s, 'CancelarCriacao'); }" />
+                                </dx:ASPxButton>
+                            </div>
+                            <br />
+                        </dx:PanelContent>
+                    </PanelCollection>
+
+                </dx:ASPxRoundPanel>
+                <%-- FORMULARIO DE DELEÇÃO FIM --%>
+
+                <%-- GRIDVIEW DEPENDENTES INICIO --%>
+                 <dx:ASPxMenu
+                    runat="server"
+                    ClientInstanceName="AddDependente"
+                    ShowAsToolbar="true"
+                    ShowPopOutImages="true"
+                    Theme="Office2010Blue"
+                    ID="AddDependente"
+                    ClientVisible="false">
+                    <Items>
+                        <dx:MenuItem Text="Adicionar" Name="ADICIONAR">
+                            <Image IconID="actions_insert_16x16"></Image>
+                        </dx:MenuItem>
+                    </Items>
+                    <ClientSideEvents ItemClick="onClickAdd" />
+                </dx:ASPxMenu>
+
+                <dx:ASPxGridView
+                    ID="DependentesGrid"
+                    ClientInstanceName="DependentesGrid"
+                    DataSourceID="odsDependentes"
+                    runat="server"
+                    Theme="Office2010Blue"
+                    Width="100%"
+                    KeyFieldName="id"
+                    OnRowInserting="DependentesGrid_RowInserting1"
+                    OnRowInserted="DependentesGrid_RowInserted"
+                    OnRowUpdating="DependentesGrid_RowUpdating"
+                    OnRowUpdated="DependentesGrid_RowUpdated"
+                    OnRowDeleting="DependentesGrid_RowDeleting"
+                    OnRowDeleted="DependentesGrid_RowDeleted"
+                    ClientVisible="false">
+
+                    <EditFormLayoutProperties
+                        ColumnCount="2">
+
+                        <Items>
+                            <dx:GridViewColumnLayoutItem ColumnName="Nome" Caption="Nome:" Visible="true" />
+                            <dx:GridViewColumnLayoutItem ColumnName="Cpf" Caption="CPF:" Visible="true" />
+                            <dx:GridViewColumnLayoutItem ColumnName="DataDeNascimento" Caption="Data de Nascimento:" Visible="true" />
+                            <dx:GridViewColumnLayoutItem ColumnName="Email" Caption="E-mail:" Visible="true" />
+                            <dx:GridViewColumnLayoutItem ColumnName="Celular" Caption="Telefone:" Visible="true" />
+                            <dx:GridViewColumnLayoutItem ColumnName="Genero" Caption="Genero:" Visible="true" />
+                            <dx:GridViewColumnLayoutItem ColumnName="STATUS" Caption="Status:" Visible="false" />
+
+                            <dx:EditModeCommandLayoutItem HorizontalAlign="Right" ShowUpdateButton="true" ShowCancelButton="true" />
+                        </Items>
+                    </EditFormLayoutProperties>
+
+                    <ClientSideEvents CustomButtonClick="onButtonClick" />
+                    <SettingsDataSecurity
+                        AllowDelete="True"
+                        AllowEdit="True"
+                        AllowInsert="True" />
+                    <SettingsPopup>
+                        <HeaderFilter MinHeight="140px"></HeaderFilter>
+                    </SettingsPopup>
+                   
+                    <SettingsCommandButton>
+
+                        <EditButton ButtonType="Image">
+                            <Image
+                                ToolTip="Editar"
+                                IconID="edit_edit_16x16">
+                            </Image>
+                        </EditButton>
+
+                        <DeleteButton ButtonType="Image">
+                            <Image
+                                ToolTip="Excluir"
+                                IconID="edit_delete_16x16">
+                            </Image>
+                        </DeleteButton>
+
+                        <UpdateButton
+                            ButtonType="Button"
+                            Text="Confirmar">
+                            <Image IconID="actions_apply_16x16"></Image>
+                        </UpdateButton>
+
+                        <CancelButton
+                            ButtonType="Button"
+                            Text="Cancelar">
+                            <Image IconID="actions_cancel_16x16"></Image>
+                        </CancelButton>
+                    </SettingsCommandButton>
+
+                    <Columns>
+                        <dx:GridViewCommandColumn ButtonRenderMode="Image" ShowEditButton="true" ShowDeleteButton="true"></dx:GridViewCommandColumn>
+
+                        <dx:GridViewDataTextColumn FieldName="id" Visible="true"></dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn ReadOnly="false" Caption="Nome" FieldName="Nome">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="True">
+                                    <RequiredField IsRequired="true" ErrorText=" Campo Obrigatório*" />
+                                </ValidationSettings>
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="Cpf:" FieldName="Cpf">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="True">
+                                    <RequiredField IsRequired="true" ErrorText=" Campo Obrigatório*" />
+                                </ValidationSettings>
+                                <MaskSettings Mask="000\.000\.000-00" />
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataDateColumn Caption="Data" FieldName="DataDeNascimento">
+                            <PropertiesDateEdit UseMaskBehavior="true" EditFormatString="dd/MM/yyyy">
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesDateEdit>
+                        </dx:GridViewDataDateColumn>
+
+                        <dx:GridViewDataTextColumn Caption="E-mail" FieldName="Email">
+                                 <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RegularExpression
+                                        ValidationExpression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                        ErrorText="Por favor, insira um endereço de email válido." />
+                                    <RequiredField IsRequired="true" ErrorText="Campo obrigatório" />
+                                </ValidationSettings>
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataTextColumn Caption="Telefone" FieldName="Celular">
+                            <PropertiesTextEdit>
+                                <ValidationSettings
+                                    Display="Dynamic"
+                                    EnableCustomValidation="true">
+                                    <RequiredField IsRequired="true" ErrorText="O CPF é obrigatório." />
+                                </ValidationSettings>
+                                <MaskSettings Mask="(00) 00000-0000" />
+                            </PropertiesTextEdit>
+                        </dx:GridViewDataTextColumn>
+
+                        <dx:GridViewDataComboBoxColumn FieldName="Genero" Caption="Genero">
+                            <PropertiesComboBox DataSourceID="odsGenero"
+                                ValueType="System.Int32"
+                                ValueField="Value"
+                                TextField="Name" />
+                        </dx:GridViewDataComboBoxColumn>
+
+                        <dx:GridViewDataComboBoxColumn FieldName="Status" PropertiesComboBox-DataSourceID="odsStatus">
+                            <PropertiesComboBox
+                                ValueField="Value"
+                                ValueType="System.Int32"
+                                TextField="Name">
+                            </PropertiesComboBox>
+                        </dx:GridViewDataComboBoxColumn>
+                    </Columns>
+                </dx:ASPxGridView>
+               <%--=============GRID VIEW DEPENDENTE FIM===========--%>
+
+
             </dx:PanelContent>
         </PanelCollection>
     </dx:ASPxCallbackPanel>
@@ -484,21 +881,31 @@
         ID="SqlPessoa"
         OnInit="SqlPessoa_Init"
         ProviderName="System.Data.SqlClient"
-        OnSelecting="SqlPessoa_Selecting"
         ConnectionString="<%$ ConnectionStrings:iPortSolutionsSqlServerContext %>"></asp:SqlDataSource>
+
+   <%-- <asp:SqlDataSource
+        runat="server"
+        ID="SqlDependente"
+        OnInit="SqlDependente_Init"
+        ProviderName="System.Data.SqlClient"
+        ConnectionString="<%$ ConnectionStrings:iPortSolutionsSqlServerContext %>"></asp:SqlDataSource>--%>
 
     <asp:ObjectDataSource
         runat="server"
         ID="odsGenero"
         SelectMethod="GetAllGenders"
-        TypeName="DXWebApplication1.Default">
-    </asp:ObjectDataSource>
+        TypeName="DXWebApplication1.Default"></asp:ObjectDataSource>
+
+        <asp:ObjectDataSource
+        runat="server"
+        ID="odsDependentes"
+        SelectMethod="GetAllDependentes"
+        TypeName="DXWebApplication1.Default"></asp:ObjectDataSource>
 
     <asp:ObjectDataSource
         runat="server"
         ID="odsStatus"
         SelectMethod="GetAllStatus"
-        TypeName="DXWebApplication1.Default">
-    </asp:ObjectDataSource>
+        TypeName="DXWebApplication1.Default"></asp:ObjectDataSource>
 
 </asp:Content>

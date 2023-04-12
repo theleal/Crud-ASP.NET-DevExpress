@@ -11,16 +11,25 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Web.Hosting;
 using System.Web.UI.WebControls;
+using System.Linq;
 
 namespace DXWebApplication1
 {
 
     public partial class Default : System.Web.UI.Page
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            //SqlPessoa_Init(null, null);
+            //ASPxGridView1.DataBind();
+        }
 
+        #region ReadOnly
         private readonly string _connectionString = "Data Source=IPORT\\SQLEXPRESS; Integrated Security=True; Initial Catalog=iPortCrud;";
         private readonly DateTime date = DateTime.Now;
+        #endregion ReadOnly
 
+        #region Enumeradores
         private enum AcaoCallBack
         {
             Filtrar,
@@ -28,18 +37,90 @@ namespace DXWebApplication1
             AbrirFormularioDelecao,
             ConfirmarDelecao,
             CancelarDelecao,
+            AbrirFormularioCriacao,
+            ConfirmarCriacao,
+            CancelarCriacao,
+
         }
-        
         private enum AcaoVisualizacaoTela
         {
-            VizualizarFormDelecao,
-            VizualizarTelaPrincipal,
+            VisualizarFormDelecao,
+            VisualizarTelaPrincipal,
+            VisualizarFormCriacao,
         }
-        protected void Page_Load(object sender, EventArgs e)
+        enum Genero
         {
-            //SqlPessoa_Init(null, null);
-            //ASPxGridView1.DataBind();
+            Masculino = 0,
+            Feminino = 1,
+            NaoBinario = 2
         }
+        enum Status
+        {
+            Ativo = 1,
+            Excluido = 2,
+        }
+
+        #endregion Enumeradores 
+
+        #region Funções para manipular tela
+        protected void limparCamposDelete()
+        {
+            motivoExclusao.Text = "";
+            usuarioReponsavel.Text = "";
+        }
+        private void visualizacaoTela(AcaoVisualizacaoTela acaoVisualizacaoTela)
+        {
+
+            switch (acaoVisualizacaoTela)
+            {
+                case AcaoVisualizacaoTela.VisualizarFormDelecao:
+                    panelDelete.Visible = true;
+                    pnlFiltro.Visible = false;
+                    Menu.Visible = false;
+                    ASPxGridView1.Visible = false;
+                    DependentesGrid.Visible = false;
+                    break;
+
+                case AcaoVisualizacaoTela.VisualizarTelaPrincipal:
+                    panelDelete.Visible = false;
+                    pnlFiltro.Visible = true;
+                    Menu.Visible = true;
+                    ASPxGridView1.Visible = true;
+                    DependentesGrid.Visible = false;
+                    break;
+                case AcaoVisualizacaoTela.VisualizarFormCriacao:
+                    panelDelete.Visible = false;
+                    pnlFiltro.Visible = false;
+                    Menu.Visible = false;
+                    ASPxGridView1.Visible = false;
+                    CreatePanel.Visible = true;
+                    DependentesGrid.ClientVisible = true;
+                    AddDependente.ClientVisible = true;
+                    break;
+
+            }
+
+        }
+        public void search_CPF()
+        {
+
+            SqlPessoa_Init(null, null);
+            ASPxGridView1.DataBind();
+        }
+        public void delete_Fields()
+        {
+            PesquisaNomeCliente.Text = "";
+            PesquisaDataInicio.Text = "";
+            PesquisaDataFim.Text = "";
+            PesquisaCPFCliente.Text = "";
+
+            ASPxGridView1.DataBind();
+        }
+
+        #endregion Funções para manipular tela
+
+        #region callbacks e interação com grid
+
         protected void CallbackPanel_Callback(object sender, DevExpress.Web.CallbackEventArgsBase e)
         {
 
@@ -52,10 +133,51 @@ namespace DXWebApplication1
             {
                 search_CPF();
             }
+
+            else if (e.Parameter.Equals(AcaoCallBack.AbrirFormularioCriacao.ToString())) 
+            {
+                visualizacaoTela(AcaoVisualizacaoTela.VisualizarFormCriacao);
+                                
+            }
+
+            else if (e.Parameter.Equals(AcaoCallBack.ConfirmarCriacao.ToString()))
+            {
+
+                PessoaFisica pessoaFisica = new PessoaFisica();
+                pessoaFisica.Nome = nomePessoaFisica.Text;
+                pessoaFisica.Cpf = cpfPessoaFisica.Text.ToString();
+                pessoaFisica.Email = emailPessoaFisica.Text;
+                pessoaFisica.DataDeNascimento = Convert.ToDateTime(DataNasc.Text);
+                pessoaFisica.Genero = cbGenero.Text;
+                pessoaFisica.Celular = celularPessoaFisica.Text;
+                pessoaFisica.Senha = senhaPessoaFisica.Text;
+
+                foreach (PessoaFisica pfFilho in listaPessoaFisicaVinculadas)
+                {
+                    Dependente dp = new Dependente();
+                    dp.PFFilho = pfFilho;
+                    dp.PFPai = pessoaFisica;
+                    dp.Id = -1 - listaPessoaFisicaVinculadas.Count;
+                    dp.IdPessoaFisicaDependente = pfFilho.id;
+                    dp.IdPessoaFisicaPai = pessoaFisica.id;
+                    dp.TipoDependente = "Filho";
+                    dp.DataCriacao = date;
+                    dp.DataAlteracao = date;
+                    pessoaFisica.Dependentes.Add(dp);
+                }
+
+                //InsertData(pessoaFisica);
+            }
+
+            else if (e.Parameter.Equals(AcaoCallBack.CancelarCriacao.ToString()))
+            {
+                visualizacaoTela(AcaoVisualizacaoTela.VisualizarTelaPrincipal);
+            }
+
             else if (e.Parameter.Equals(AcaoCallBack.AbrirFormularioDelecao.ToString()))
             {
 
-                visualizacaoTela(AcaoVisualizacaoTela.VizualizarFormDelecao);
+                visualizacaoTela(AcaoVisualizacaoTela.VisualizarFormDelecao);
                 limparCamposDelete();
 
                 //var rowStatus = Convert.ToInt32(HiddenStatusUsuario.Get("StatusValue").ToString());
@@ -89,71 +211,40 @@ namespace DXWebApplication1
                 }
                 else
                 {
-                    visualizacaoTela(AcaoVisualizacaoTela.VizualizarFormDelecao);
+                    visualizacaoTela(AcaoVisualizacaoTela.VisualizarFormDelecao);
                     limparCamposDelete();
                 }
 
             }
             else if (e.Parameter.Equals(AcaoCallBack.CancelarDelecao.ToString()))
             {
-                visualizacaoTela(AcaoVisualizacaoTela.VizualizarTelaPrincipal);
+                visualizacaoTela(AcaoVisualizacaoTela.VisualizarTelaPrincipal);
                 limparCamposDelete();
             }
         }
-        protected void limparCamposDelete()
+        protected void btnFiltro_Click(object sender, EventArgs e)
         {
-            motivoExclusao.Text = "";
-            usuarioReponsavel.Text = "";
-        }
-        private void visualizacaoTela(AcaoVisualizacaoTela acaoVisualizacaoTela)
-        {
-
-            switch (acaoVisualizacaoTela)
-            {
-                case AcaoVisualizacaoTela.VizualizarFormDelecao:
-                    panelDelete.Visible = true;
-                    pnlFiltro.Visible = false;
-                    Menu.Visible = false;
-                    ASPxGridView1.Visible = false;
-                    break;
-
-                case AcaoVisualizacaoTela.VizualizarTelaPrincipal:
-                    panelDelete.Visible = false;
-                    pnlFiltro.Visible = true;
-                    Menu.Visible = true;
-                    ASPxGridView1.Visible = true;
-                    break;
-
-            }
-
-        }
-        public void search_CPF()
-        {
-
             SqlPessoa_Init(null, null);
-            ASPxGridView1.DataBind();
-        }
-        public void delete_Fields()
-        {
-            PesquisaNomeCliente.Text = "";
-            PesquisaDataInicio.Text = "";
-            PesquisaDataFim.Text = "";
-            PesquisaCPFCliente.Text = "";
 
+            //Função DataBind é utilizada para DAR UM REFRESH NO GRID
             ASPxGridView1.DataBind();
         }
+
+        #endregion callbacks e interação com grid
+
+        #region Funções gridPessoaFisica
         protected void ASPxGridView1_RowInserting(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
         {
             var pessoaFisica = new PessoaFisica();
             pessoaFisica.Nome = e.NewValues["NOME"] != null ? e.NewValues["NOME"].ToString() : null;
             pessoaFisica.Cpf = e.NewValues["CPF"] != null ? e.NewValues["CPF"].ToString() : null;
             pessoaFisica.Email = e.NewValues["EMAIL"] != null ? e.NewValues["EMAIL"].ToString() : null;
-            if (e.NewValues["DATANASCIMENTO"] != null) pessoaFisica.Data = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
+            if (e.NewValues["DATANASCIMENTO"] != null) pessoaFisica.DataDeNascimento = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
             pessoaFisica.Genero = e.NewValues["GENERO"] != null ? e.NewValues["GENERO"].ToString() : null;
             pessoaFisica.Celular = e.NewValues["CELULAR"] != null ? e.NewValues["CELULAR"].ToString() : null;
             pessoaFisica.Senha = e.NewValues["SENHA"] != null ? e.NewValues["SENHA"].ToString() : null;
 
-            InsertData(pessoaFisica.Nome, pessoaFisica.Cpf, pessoaFisica.Email, pessoaFisica.Data, pessoaFisica.Genero, pessoaFisica.Celular, pessoaFisica.Senha);
+            InsertData(pessoaFisica);
             /* 
                Ao tentar inserir um novo registro, todos os valores inseridos nos campos do editform podem ser acessados 
                atraves do AspxDataInsertingEventArgs.
@@ -186,12 +277,12 @@ namespace DXWebApplication1
             pessoaFisica.Nome = e.NewValues["NOME"] != null ? e.NewValues["NOME"].ToString() : null;
             pessoaFisica.Cpf = e.NewValues["CPF"] != null ? e.NewValues["CPF"].ToString() : null;
             pessoaFisica.Email = e.NewValues["EMAIL"] != null ? e.NewValues["EMAIL"].ToString() : null;
-            if (e.NewValues["DATANASCIMENTO"] != null) pessoaFisica.Data = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
+            if (e.NewValues["DATANASCIMENTO"] != null) pessoaFisica.DataDeNascimento = Convert.ToDateTime(e.NewValues["DATANASCIMENTO"].ToString());
             pessoaFisica.Genero = e.NewValues["GENERO"] != null ? e.NewValues["GENERO"].ToString() : null;
             pessoaFisica.Celular = e.NewValues["CELULAR"] != null ? e.NewValues["CELULAR"].ToString() : null;
             pessoaFisica.Senha = e.NewValues["SENHA"] != null ? e.NewValues["SENHA"].ToString() : null;
 
-            UpdateData(pessoaFisica.id, pessoaFisica.Nome, pessoaFisica.Cpf, pessoaFisica.Email, pessoaFisica.Data, pessoaFisica.Genero, pessoaFisica.Celular, pessoaFisica.Senha);
+            UpdateData(pessoaFisica);
         }
         protected void ASPxGridView1_RowUpdated(object sender, DevExpress.Web.Data.ASPxDataUpdatedEventArgs e)
         {
@@ -228,7 +319,116 @@ namespace DXWebApplication1
             }
 
         }
-        protected void SqlPessoa_Init(object sender, EventArgs e)
+        protected void ASPxGridView1_CustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
+        {
+
+
+            if (e.ButtonID == "deleteButton")
+            {
+                Int32 status = Convert.ToInt32(ASPxGridView1.GetRowValues(e.VisibleIndex, "STATUS"));
+
+                if (status == 2)
+                {
+                    e.Enabled = false;
+                }
+
+            }
+
+        }
+
+        #endregion Funções gridPessoaFisica
+
+        #region Funções manipulação de dados no banco
+        protected void DeleteData(int id, DateTime? data, string descricao, string responsavel)
+        {
+
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+
+                connection.Open();
+
+                string queryUpdate = $@"UPDATE iPortCrud.dbo.usuarios SET 
+                    status = '2'
+                    WHERE id = {id};";
+
+                string queryInsert = $@"INSERT INTO iPortCrud.dbo.ocorrencias (usuario_id, data, descricao, responsavel) 
+                                VALUES ('{id}', 
+                                        '{data}', 
+                                        '{descricao}',
+                                        '{responsavel}')";
+
+
+
+                SqlCommand commandUpdate = new SqlCommand(queryUpdate, connection);
+                commandUpdate.ExecuteNonQuery();
+
+
+                SqlCommand commandInsert = new SqlCommand(queryInsert, connection);
+                commandInsert.ExecuteNonQuery();
+
+                ASPxGridView1.DataBind();
+
+                connection.Close();
+
+            }
+        }
+        protected void InsertData(PessoaFisica pessoaFisica)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = $@"INSERT INTO iPortCrud.dbo.usuarios (nome, cpf, email, data_nascimento, genero, celular, senha) 
+                                VALUES ('{pessoaFisica.Nome}', 
+                                        '{pessoaFisica.Cpf}', 
+                                        '{pessoaFisica.Email}', 
+                                        '{pessoaFisica.DataDeNascimento}', 
+                                        '{pessoaFisica.Genero}', 
+                                        '{pessoaFisica.Celular}', 
+                                        '{pessoaFisica.Senha}')";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+
+                SqlPessoa_Init(null, null);
+                ASPxGridView1.DataBind();
+
+                connection.Close();
+
+            }
+        }
+        protected void UpdateData(PessoaFisica pessoaFisica)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = $@"UPDATE iPortCrud.dbo.usuarios SET 
+                    nome = '{pessoaFisica.Nome}', 
+                    cpf = '{pessoaFisica.Cpf}',
+                    email = '{pessoaFisica.Email}', 
+                    data_nascimento = '{pessoaFisica.DataDeNascimento}', 
+                    genero = '{pessoaFisica.Genero}', 
+                    celular = '{pessoaFisica.Celular}', 
+                    senha = '{pessoaFisica.Senha}'
+                    WHERE id = {pessoaFisica.id};";
+
+                   SqlCommand command = new SqlCommand(query, connection);
+                command.ExecuteNonQuery();
+
+                SqlPessoa_Init(null, null);
+                ASPxGridView1.DataBind();
+
+                connection.Close();
+
+            }
+        }
+
+        #endregion Funções manipulação de dados no banco
+
+        #region Object e Sql DataSources
+        protected void SqlPessoa_Init(object swender, EventArgs e)
         {
 
             string strConsulta = $@"select 
@@ -266,130 +466,7 @@ namespace DXWebApplication1
             ASPxGridView1.DataBind();
 
         }
-        protected void SqlPessoa_Selecting(object sender, System.Web.UI.WebControls.SqlDataSourceSelectingEventArgs e)
-        {
-            //e.Command.Parameters["@NomeUsuario"].Value = !string.IsNullOrEmpty(PesquisaNomeCliente.Text) ? PesquisaNomeCliente.Text.ToString(): " ";
-        }
-        protected void DeleteData(int id, DateTime? data, string descricao, string responsavel)
-        {
 
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-
-                connection.Open();
-
-                string queryUpdate = $@"UPDATE iPortCrud.dbo.usuarios SET 
-                    status = '2'
-                    WHERE id = {id};";
-
-                string queryInsert = $@"INSERT INTO iPortCrud.dbo.ocorrencias (usuario_id, data, descricao, responsavel) 
-                                VALUES ('{id}', 
-                                        '{data}', 
-                                        '{descricao}',
-                                        '{responsavel}')";
-
-
-
-                SqlCommand commandUpdate = new SqlCommand(queryUpdate, connection);
-                commandUpdate.ExecuteNonQuery();
-
-
-                SqlCommand commandInsert = new SqlCommand(queryInsert, connection);
-                commandInsert.ExecuteNonQuery();
-
-                ASPxGridView1.DataBind();
-
-                connection.Close();
-
-            }
-        }
-        protected void InsertData(string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = $@"INSERT INTO iPortCrud.dbo.usuarios (nome, cpf, email, data_nascimento, genero, celular, senha) 
-                                VALUES ('{nome}', 
-                                        '{cpf}', 
-                                        '{email}', 
-                                        '{datanascimento}', 
-                                        '{genero}', 
-                                        '{celular}', 
-                                        '{senha}')";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.ExecuteNonQuery();
-
-                SqlPessoa_Init(null, null);
-                ASPxGridView1.DataBind();
-
-                connection.Close();
-
-            }
-        }
-        protected void UpdateData(int id, string nome, string cpf, string email, DateTimeOffset? datanascimento, string genero, string celular, string senha)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = $@"UPDATE iPortCrud.dbo.usuarios SET 
-                    nome = '{nome}', 
-                    cpf = '{cpf}',
-                    email = '{email}', 
-                    data_nascimento = '{datanascimento}', 
-                    genero = '{genero}', 
-                    celular = '{celular}', 
-                    senha = '{senha}'
-                    WHERE id = {id};";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.ExecuteNonQuery();
-
-                SqlPessoa_Init(null, null);
-                ASPxGridView1.DataBind();
-
-                connection.Close();
-
-            }
-        }
-
-        protected void btnFiltro_Click(object sender, EventArgs e)
-        {
-            SqlPessoa_Init(null, null);
-
-            //Função DataBind é utilizada para DAR UM REFRESH NO GRID
-            ASPxGridView1.DataBind();
-        }
-        enum Genero
-        {
-            Masculino = 0,
-            Feminino = 1,
-            NaoBinario = 2
-        }
-        public DataTable GetAllGenders()
-        {
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("Value", typeof(int));
-            dataTable.Columns.Add("Name", typeof(string));
-
-            foreach (var value in Enum.GetValues(typeof(Genero)))
-            {
-                DataRow row = dataTable.NewRow();
-                row["Value"] = (int)value;
-                row["Name"] = Enum.GetName(typeof(Genero), value);
-                dataTable.Rows.Add(row);
-            }
-
-            return dataTable;
-        }
-        enum Status
-        {
-            Ativo = 1,
-            Excluido = 2,
-        }
         public DataTable GetAllStatus()
         {
 
@@ -408,22 +485,124 @@ namespace DXWebApplication1
 
             return dataTable;
         }
-
-        protected void ASPxGridView1_CustomButtonInitialize(object sender, ASPxGridViewCustomButtonEventArgs e)
+        public DataTable GetAllGenders()
         {
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Value", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
 
-
-            if(e.ButtonID == "deleteButton")
+            foreach (var value in Enum.GetValues(typeof(Genero)))
             {
-                Int32 status = Convert.ToInt32(ASPxGridView1.GetRowValues(e.VisibleIndex, "STATUS"));
-                
-                if (status == 2)
-                {
-                    e.Enabled = false;
-                }
+                DataRow row = dataTable.NewRow();
+                row["Value"] = (int)value;
+                row["Name"] = Enum.GetName(typeof(Genero), value);
+                dataTable.Rows.Add(row);
+            }
 
+            return dataTable;
+        }
+
+
+        protected static List<PessoaFisica> listaPessoaFisicaVinculadas = new List<PessoaFisica>();
+
+        public List<PessoaFisica> GetAllDependentes()
+        {
+            return listaPessoaFisicaVinculadas;
+
+        }
+
+        #endregion DataSources
+
+        #region funções gridDependentePessoaFisicaDependente
+
+
+        #endregion funções gridDependentePessoaFisicaDependente
+
+        protected void DependentesGrid_RowInserting1(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
+        {
+            
+            PessoaFisica dependente = new PessoaFisica();
+            dependente.id = -1 - listaPessoaFisicaVinculadas.Count;
+            dependente.Nome = e.NewValues["Nome"] != null ? e.NewValues["Nome"].ToString() : null;
+            dependente.Cpf = e.NewValues["Cpf"] != null ? e.NewValues["Cpf"].ToString() : null;
+            dependente.DataDeNascimento = e.NewValues["DataDeNascimento"] != null ? DateTimeOffset.Parse(e.NewValues["DataDeNascimento"].ToString()) : (DateTimeOffset?)null;
+            dependente.Email = e.NewValues["Email"] != null ? e.NewValues["Email"].ToString() : null;
+            dependente.Celular = e.NewValues["Celular"] != null ? e.NewValues["Celular"].ToString() : null;
+            dependente.Genero = e.NewValues["Genero"] != null ? e.NewValues["Genero"].ToString() : null;
+            
+            
+            //listaPessoaFisicaVinculadas.Find(s => s.id == 1);
+
+
+            listaPessoaFisicaVinculadas.Add(dependente);
+        }
+
+        protected void DependentesGrid_RowInserted(object sender, DevExpress.Web.Data.ASPxDataInsertedEventArgs e)
+        {
+            try
+            {
+                e.ExceptionHandled = true;
+            }
+
+            catch
+            {
+
+            }
+        }
+
+       
+        protected void DependentesGrid_RowUpdating(object sender, DevExpress.Web.Data.ASPxDataUpdatingEventArgs e)
+        {
+            int id = Convert.ToInt32(e.Keys["id"].ToString());
+            PessoaFisica pessoa = listaPessoaFisicaVinculadas.FirstOrDefault(s => s.id == id);
+
+            if (pessoa != null)
+            {
+                pessoa.Nome = e.NewValues["Nome"].ToString();
+                pessoa.Cpf = e.NewValues["Cpf"].ToString();
+                pessoa.DataDeNascimento = Convert.ToDateTime(e.NewValues["DataDeNascimento"].ToString());
+                pessoa.Email = e.NewValues["Email"] != null ? e.NewValues["Email"].ToString() : null;
+                pessoa.Celular = e.NewValues["Celular"] != null ? e.NewValues["Celular"].ToString() : null;
+                pessoa.Genero = e.NewValues["Genero"] != null ? e.NewValues["Genero"].ToString() : null;
+            }
+        }
+
+        protected void DependentesGrid_RowDeleting(object sender, DevExpress.Web.Data.ASPxDataDeletingEventArgs e)
+        {
+            int id = Convert.ToInt32(e.Keys["id"].ToString());
+            PessoaFisica pessoa = listaPessoaFisicaVinculadas.FirstOrDefault(s => s.id == id);
+
+            if (pessoa != null)
+            {   
+                listaPessoaFisicaVinculadas.Remove(pessoa);
+                DependentesGrid.DataBind();
             }
 
         }
+        protected void DependentesGrid_RowUpdated(object sender, DevExpress.Web.Data.ASPxDataUpdatedEventArgs e)
+        {
+            try
+            {
+                e.ExceptionHandled = true;
+            }
+
+            catch
+            {
+
+            }
+        }
+
+        protected void DependentesGrid_RowDeleted(object sender, DevExpress.Web.Data.ASPxDataDeletedEventArgs e)
+        {
+            try
+            {
+                e.ExceptionHandled = true;
+            }
+
+            catch
+            {
+
+            }
+        }
     }
-}
+} 

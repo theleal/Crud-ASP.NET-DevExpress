@@ -186,6 +186,123 @@ namespace DXWebApplication1
         protected global::DevExpress.Web.ASPxButton ASPxButton2;
 
         /// <summary>
+        /// Controle CreatePanel.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxRoundPanel CreatePanel;
+
+        /// <summary>
+        /// Controle createForm.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxFormLayout createForm;
+
+        /// <summary>
+        /// Controle nomePessoaFisica.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxTextBox nomePessoaFisica;
+
+        /// <summary>
+        /// Controle cpfPessoaFisica.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxTextBox cpfPessoaFisica;
+
+        /// <summary>
+        /// Controle emailPessoaFisica.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxTextBox emailPessoaFisica;
+
+        /// <summary>
+        /// Controle DataNasc.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxDateEdit DataNasc;
+
+        /// <summary>
+        /// Controle cbGenero.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxComboBox cbGenero;
+
+        /// <summary>
+        /// Controle celularPessoaFisica.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxTextBox celularPessoaFisica;
+
+        /// <summary>
+        /// Controle senhaPessoaFisica.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxTextBox senhaPessoaFisica;
+
+        /// <summary>
+        /// Controle ASPxButton3.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxButton ASPxButton3;
+
+        /// <summary>
+        /// Controle ASPxButton4.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxButton ASPxButton4;
+
+        /// <summary>
+        /// Controle AddDependente.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxMenu AddDependente;
+
+        /// <summary>
+        /// Controle DependentesGrid.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::DevExpress.Web.ASPxGridView DependentesGrid;
+
+        /// <summary>
         /// Controle SqlPessoa.
         /// </summary>
         /// <remarks>
@@ -202,6 +319,15 @@ namespace DXWebApplication1
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ObjectDataSource odsGenero;
+
+        /// <summary>
+        /// Controle odsDependentes.
+        /// </summary>
+        /// <remarks>
+        /// Campo gerado automaticamente.
+        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ObjectDataSource odsDependentes;
 
         /// <summary>
         /// Controle odsStatus.
