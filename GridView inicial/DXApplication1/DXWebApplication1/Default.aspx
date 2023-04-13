@@ -467,7 +467,7 @@
                             <div style="display: flex; justify-content: flex-end; padding-right: 65px;">
                                 <dx:ASPxButton
                                     runat="server"
-                                    ID="ASPxButton1"
+                                    ID="btnConfirmarDelecao"
                                     ClientInstanceName="confirmarDelecao"
                                     Text="Confirmar"
                                     HorizontalAlign="Center">
@@ -476,7 +476,7 @@
 
                                 <dx:ASPxButton
                                     runat="server"
-                                    ID="ASPxButton2"
+                                    ID="btnCancelarDelecao"
                                     ClientInstanceName="cancelarDelecao"
                                     Text="Cancelar"
                                     HorizontalAlign="Center">
@@ -683,8 +683,8 @@
                             <div style="display: flex; justify-content: flex-end; padding-right: 65px;">
                                 <dx:ASPxButton
                                     runat="server"
-                                    ID="ASPxButton3"
-                                    ClientInstanceName="confirmarDelecao"
+                                    ID="btnCreatePessoaFisica"
+                                    ClientInstanceName="btnCreatePessoaFisica"
                                     Text="Confirmar"
                                     HorizontalAlign="Center">
                                     <ClientSideEvents Click="function(s, e) { Callback_Criacao(s, 'ConfirmarCriacao'); }" />
@@ -692,8 +692,8 @@
 
                                 <dx:ASPxButton
                                     runat="server"
-                                    ID="ASPxButton4"
-                                    ClientInstanceName="cancelarDelecao"
+                                    ID="btnCancelPessoaFisica"
+                                    ClientInstanceName="btnCancelPessoaFisica"
                                     Text="Cancelar"
                                     HorizontalAlign="Center">
                                     <ClientSideEvents Click="function(s, e) { Callback_Criacao(s, 'CancelarCriacao'); }" />
@@ -704,7 +704,7 @@
                     </PanelCollection>
 
                 </dx:ASPxRoundPanel>
-                <%-- FORMULARIO DE DELEÇÃO FIM --%>
+                <%-- FORMULARIO DE CRIACAO FIM --%>
 
                 <%-- GRIDVIEW DEPENDENTES INICIO --%>
                  <dx:ASPxMenu
@@ -743,13 +743,14 @@
                         ColumnCount="2">
 
                         <Items>
+
                             <dx:GridViewColumnLayoutItem ColumnName="Nome" Caption="Nome:" Visible="true" />
                             <dx:GridViewColumnLayoutItem ColumnName="Cpf" Caption="CPF:" Visible="true" />
                             <dx:GridViewColumnLayoutItem ColumnName="DataDeNascimento" Caption="Data de Nascimento:" Visible="true" />
                             <dx:GridViewColumnLayoutItem ColumnName="Email" Caption="E-mail:" Visible="true" />
                             <dx:GridViewColumnLayoutItem ColumnName="Celular" Caption="Telefone:" Visible="true" />
                             <dx:GridViewColumnLayoutItem ColumnName="Genero" Caption="Genero:" Visible="true" />
-                            <dx:GridViewColumnLayoutItem ColumnName="STATUS" Caption="Status:" Visible="false" />
+                            <dx:GridViewColumnLayoutItem ColumnName="Status" Caption="Status:" Visible="false" />
 
                             <dx:EditModeCommandLayoutItem HorizontalAlign="Right" ShowUpdateButton="true" ShowCancelButton="true" />
                         </Items>
@@ -796,7 +797,7 @@
                     <Columns>
                         <dx:GridViewCommandColumn ButtonRenderMode="Image" ShowEditButton="true" ShowDeleteButton="true"></dx:GridViewCommandColumn>
 
-                        <dx:GridViewDataTextColumn FieldName="id" Visible="true"></dx:GridViewDataTextColumn>
+                        <dx:GridViewDataTextColumn FieldName="id" Visible="false"></dx:GridViewDataTextColumn>
 
                         <dx:GridViewDataTextColumn ReadOnly="false" Caption="Nome" FieldName="Nome">
                             <PropertiesTextEdit>

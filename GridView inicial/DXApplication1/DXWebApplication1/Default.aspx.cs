@@ -20,16 +20,18 @@ namespace DXWebApplication1
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            //SqlPessoa_Init(null, null);
-            //ASPxGridView1.DataBind();
+
         }
 
         #region ReadOnly
+
         private readonly string _connectionString = "Data Source=IPORT\\SQLEXPRESS; Integrated Security=True; Initial Catalog=iPortCrud;";
         private readonly DateTime date = DateTime.Now;
+
         #endregion ReadOnly
 
         #region Enumeradores
+
         private enum AcaoCallBack
         {
             Filtrar,
@@ -48,22 +50,20 @@ namespace DXWebApplication1
             VisualizarTelaPrincipal,
             VisualizarFormCriacao,
         }
-        enum Genero
-        {
-            Masculino = 0,
-            Feminino = 1,
-            NaoBinario = 2
-        }
-        enum Status
-        {
-            Ativo = 1,
-            Excluido = 2,
-        }
-
+        
         #endregion Enumeradores 
 
         #region Funções para manipular tela
-        protected void limparCamposDelete()
+        public void delete_Fields()
+        {
+            PesquisaNomeCliente.Text = "";
+            PesquisaDataInicio.Text = "";
+            PesquisaDataFim.Text = "";
+            PesquisaCPFCliente.Text = "";
+
+            ASPxGridView1.DataBind();
+        }
+        protected void limparCamposFormDelete()
         {
             motivoExclusao.Text = "";
             usuarioReponsavel.Text = "";
@@ -101,26 +101,23 @@ namespace DXWebApplication1
             }
 
         }
+
+        #endregion Funções para manipular tela
+
+        #region callbacks e interações
+        protected void btnFiltro_Click(object sender, EventArgs e)
+        {
+            SqlPessoa_Init(null, null);
+
+            //Função DataBind é utilizada para DAR UM REFRESH NO GRID
+            ASPxGridView1.DataBind();
+        }
         public void search_CPF()
         {
 
             SqlPessoa_Init(null, null);
             ASPxGridView1.DataBind();
         }
-        public void delete_Fields()
-        {
-            PesquisaNomeCliente.Text = "";
-            PesquisaDataInicio.Text = "";
-            PesquisaDataFim.Text = "";
-            PesquisaCPFCliente.Text = "";
-
-            ASPxGridView1.DataBind();
-        }
-
-        #endregion Funções para manipular tela
-
-        #region callbacks e interação com grid
-
         protected void CallbackPanel_Callback(object sender, DevExpress.Web.CallbackEventArgsBase e)
         {
 
@@ -142,43 +139,21 @@ namespace DXWebApplication1
 
             else if (e.Parameter.Equals(AcaoCallBack.ConfirmarCriacao.ToString()))
             {
-
-                PessoaFisica pessoaFisica = new PessoaFisica();
-                pessoaFisica.Nome = nomePessoaFisica.Text;
-                pessoaFisica.Cpf = cpfPessoaFisica.Text.ToString();
-                pessoaFisica.Email = emailPessoaFisica.Text;
-                pessoaFisica.DataDeNascimento = Convert.ToDateTime(DataNasc.Text);
-                pessoaFisica.Genero = cbGenero.Text;
-                pessoaFisica.Celular = celularPessoaFisica.Text;
-                pessoaFisica.Senha = senhaPessoaFisica.Text;
-
-                foreach (PessoaFisica pfFilho in listaPessoaFisicaVinculadas)
-                {
-                    Dependente dp = new Dependente();
-                    dp.PFFilho = pfFilho;
-                    dp.PFPai = pessoaFisica;
-                    dp.Id = -1 - listaPessoaFisicaVinculadas.Count;
-                    dp.IdPessoaFisicaDependente = pfFilho.id;
-                    dp.IdPessoaFisicaPai = pessoaFisica.id;
-                    dp.TipoDependente = "Filho";
-                    dp.DataCriacao = date;
-                    dp.DataAlteracao = date;
-                    pessoaFisica.Dependentes.Add(dp);
-                }
-
-                //InsertData(pessoaFisica);
+                CadastroPessoaFisica();
             }
 
             else if (e.Parameter.Equals(AcaoCallBack.CancelarCriacao.ToString()))
             {
                 visualizacaoTela(AcaoVisualizacaoTela.VisualizarTelaPrincipal);
+                listaPessoaFisicaVinculadas.Clear();
+                DependentesGrid.DataBind();
             }
 
             else if (e.Parameter.Equals(AcaoCallBack.AbrirFormularioDelecao.ToString()))
             {
 
                 visualizacaoTela(AcaoVisualizacaoTela.VisualizarFormDelecao);
-                limparCamposDelete();
+                limparCamposFormDelete();
 
                 //var rowStatus = Convert.ToInt32(HiddenStatusUsuario.Get("StatusValue").ToString());
                 //int statusValue = (int)ASPxGridView1.GetRowValues(rowStatus, "STATUS");
@@ -196,41 +171,17 @@ namespace DXWebApplication1
             }
             else if (e.Parameter.Equals(AcaoCallBack.ConfirmarDelecao.ToString()))
             {
-                if (motivoExclusao.Text != string.Empty && usuarioReponsavel.Text != string.Empty)
-                {
-                    Int32 idUsuario = Convert.ToInt32(HiddenIdUsuario.Get("IDUsuario").ToString());
-                    Ocorrencia ocorrencia = new Ocorrencia();
-                    ocorrencia.Data = date;
-                    ocorrencia.Descricao = motivoExclusao.Text;
-                    ocorrencia.Responsavel = usuarioReponsavel.Text;
-                    ocorrencia.Usuario_id = idUsuario;
-
-                    DeleteData(ocorrencia.Usuario_id, ocorrencia.Data, ocorrencia.Descricao, ocorrencia.Responsavel);
-                    ASPxGridView1.DataBind();
-                    limparCamposDelete();
-                }
-                else
-                {
-                    visualizacaoTela(AcaoVisualizacaoTela.VisualizarFormDelecao);
-                    limparCamposDelete();
-                }
+                ConfirmarDelecaoPessoaFisica();
 
             }
             else if (e.Parameter.Equals(AcaoCallBack.CancelarDelecao.ToString()))
             {
                 visualizacaoTela(AcaoVisualizacaoTela.VisualizarTelaPrincipal);
-                limparCamposDelete();
+                limparCamposFormDelete();
             }
         }
-        protected void btnFiltro_Click(object sender, EventArgs e)
-        {
-            SqlPessoa_Init(null, null);
-
-            //Função DataBind é utilizada para DAR UM REFRESH NO GRID
-            ASPxGridView1.DataBind();
-        }
-
-        #endregion callbacks e interação com grid
+        
+        #endregion callbacks e interação
 
         #region Funções gridPessoaFisica
         protected void ASPxGridView1_RowInserting(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
@@ -338,7 +289,7 @@ namespace DXWebApplication1
 
         #endregion Funções gridPessoaFisica
 
-        #region Funções manipulação de dados no banco
+        #region Funções Manipulação de dados 
         protected void DeleteData(int id, DateTime? data, string descricao, string responsavel)
         {
 
@@ -424,10 +375,107 @@ namespace DXWebApplication1
 
             }
         }
+        public void ConfirmarDelecaoPessoaFisica() 
+        {
+            if (motivoExclusao.Text != string.Empty && usuarioReponsavel.Text != string.Empty)
+            {
+                Int32 idUsuario = Convert.ToInt32(HiddenIdUsuario.Get("IDUsuario").ToString());
+                Ocorrencia ocorrencia = new Ocorrencia();
+                ocorrencia.Data = date;
+                ocorrencia.Descricao = motivoExclusao.Text;
+                ocorrencia.Responsavel = usuarioReponsavel.Text;
+                ocorrencia.Usuario_id = idUsuario;
+
+                DeleteData(ocorrencia.Usuario_id, ocorrencia.Data, ocorrencia.Descricao, ocorrencia.Responsavel);
+                ASPxGridView1.DataBind();
+                limparCamposFormDelete();
+            }
+            else
+            {
+                visualizacaoTela(AcaoVisualizacaoTela.VisualizarFormDelecao);
+                limparCamposFormDelete();
+            }
+        }
+        public void CadastroPessoaFisica()
+        {
+            PessoaFisica pessoaFisica = new PessoaFisica();
+            pessoaFisica.Nome = nomePessoaFisica.Text;
+            pessoaFisica.Cpf = cpfPessoaFisica.Text.ToString();
+            pessoaFisica.Email = emailPessoaFisica.Text;
+            pessoaFisica.DataDeNascimento = Convert.ToDateTime(DataNasc.Text);
+            pessoaFisica.Genero = cbGenero.Text;
+            pessoaFisica.Celular = celularPessoaFisica.Text;
+            pessoaFisica.Senha = senhaPessoaFisica.Text;
+
+            foreach (PessoaFisica pfFilho in listaPessoaFisicaVinculadas)
+            {
+                Dependente dp = new Dependente();
+                dp.PFFilho = pfFilho;
+                dp.PFPai = pessoaFisica;
+                dp.Id = -1 - listaPessoaFisicaVinculadas.Count;
+                dp.IdPessoaFisicaDependente = pfFilho.id;
+                dp.IdPessoaFisicaPai = pessoaFisica.id;
+                dp.TipoDependente = "Filho";
+                dp.DataCriacao = date;
+                dp.DataAlteracao = date;
+                pessoaFisica.Dependentes.Add(dp);
+            }
+
+        }
 
         #endregion Funções manipulação de dados no banco
 
         #region Object e Sql DataSources
+        enum Status
+        {
+            Ativo = 1,
+            Excluido = 2,
+        }
+        enum Genero
+        {
+            Masculino = 0,
+            Feminino = 1,
+            NaoBinario = 2
+        }
+        public DataTable GetAllStatus()
+        {
+
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Value", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
+
+            foreach (var value in Enum.GetValues(typeof(Status)))
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = (int)value;
+                row["Name"] = Enum.GetName(typeof(Status), value);
+                dataTable.Rows.Add(row);
+
+            }
+
+            return dataTable;
+        }
+        public DataTable GetAllGenders()
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Value", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
+
+            foreach (var value in Enum.GetValues(typeof(Genero)))
+            {
+                DataRow row = dataTable.NewRow();
+                row["Value"] = (int)value;
+                row["Name"] = Enum.GetName(typeof(Genero), value);
+                dataTable.Rows.Add(row);
+            }
+
+            return dataTable;
+        }
+        public List<PessoaFisica> GetAllDependentes()
+        {
+            return listaPessoaFisicaVinculadas;
+
+        }
         protected void SqlPessoa_Init(object swender, EventArgs e)
         {
 
@@ -467,57 +515,10 @@ namespace DXWebApplication1
 
         }
 
-        public DataTable GetAllStatus()
-        {
-
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("Value", typeof(int));
-            dataTable.Columns.Add("Name", typeof(string));
-
-            foreach (var value in Enum.GetValues(typeof(Status)))
-            {
-                DataRow row = dataTable.NewRow();
-                row["Value"] = (int)value;
-                row["Name"] = Enum.GetName(typeof(Status), value);
-                dataTable.Rows.Add(row);
-
-            }
-
-            return dataTable;
-        }
-        public DataTable GetAllGenders()
-        {
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("Value", typeof(int));
-            dataTable.Columns.Add("Name", typeof(string));
-
-            foreach (var value in Enum.GetValues(typeof(Genero)))
-            {
-                DataRow row = dataTable.NewRow();
-                row["Value"] = (int)value;
-                row["Name"] = Enum.GetName(typeof(Genero), value);
-                dataTable.Rows.Add(row);
-            }
-
-            return dataTable;
-        }
-
-
         protected static List<PessoaFisica> listaPessoaFisicaVinculadas = new List<PessoaFisica>();
+        #endregion Object e Sql DataSources
 
-        public List<PessoaFisica> GetAllDependentes()
-        {
-            return listaPessoaFisicaVinculadas;
-
-        }
-
-        #endregion DataSources
-
-        #region funções gridDependentePessoaFisicaDependente
-
-
-        #endregion funções gridDependentePessoaFisicaDependente
-
+        #region Funções gridDependentePessoaFisicaDependente
         protected void DependentesGrid_RowInserting1(object sender, DevExpress.Web.Data.ASPxDataInsertingEventArgs e)
         {
             
@@ -529,6 +530,7 @@ namespace DXWebApplication1
             dependente.Email = e.NewValues["Email"] != null ? e.NewValues["Email"].ToString() : null;
             dependente.Celular = e.NewValues["Celular"] != null ? e.NewValues["Celular"].ToString() : null;
             dependente.Genero = e.NewValues["Genero"] != null ? e.NewValues["Genero"].ToString() : null;
+            dependente.Status = 1;
             
             
             //listaPessoaFisicaVinculadas.Find(s => s.id == 1);
@@ -536,7 +538,6 @@ namespace DXWebApplication1
 
             listaPessoaFisicaVinculadas.Add(dependente);
         }
-
         protected void DependentesGrid_RowInserted(object sender, DevExpress.Web.Data.ASPxDataInsertedEventArgs e)
         {
             try
@@ -549,8 +550,6 @@ namespace DXWebApplication1
 
             }
         }
-
-       
         protected void DependentesGrid_RowUpdating(object sender, DevExpress.Web.Data.ASPxDataUpdatingEventArgs e)
         {
             int id = Convert.ToInt32(e.Keys["id"].ToString());
@@ -564,9 +563,10 @@ namespace DXWebApplication1
                 pessoa.Email = e.NewValues["Email"] != null ? e.NewValues["Email"].ToString() : null;
                 pessoa.Celular = e.NewValues["Celular"] != null ? e.NewValues["Celular"].ToString() : null;
                 pessoa.Genero = e.NewValues["Genero"] != null ? e.NewValues["Genero"].ToString() : null;
+                pessoa.Genero = e.NewValues["Status"] != null ? e.NewValues["Genero"].ToString() : null;
+
             }
         }
-
         protected void DependentesGrid_RowDeleting(object sender, DevExpress.Web.Data.ASPxDataDeletingEventArgs e)
         {
             int id = Convert.ToInt32(e.Keys["id"].ToString());
@@ -591,7 +591,6 @@ namespace DXWebApplication1
 
             }
         }
-
         protected void DependentesGrid_RowDeleted(object sender, DevExpress.Web.Data.ASPxDataDeletedEventArgs e)
         {
             try
@@ -604,5 +603,7 @@ namespace DXWebApplication1
 
             }
         }
+
+        #endregion Funções gridDependentePessoaFisicaDependente
     }
 } 

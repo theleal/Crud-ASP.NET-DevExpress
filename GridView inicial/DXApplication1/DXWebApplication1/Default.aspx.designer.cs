@@ -168,22 +168,22 @@ namespace DXWebApplication1
         protected global::DevExpress.Web.ASPxTextBox motivoExclusao;
 
         /// <summary>
-        /// Controle ASPxButton1.
+        /// Controle btnConfirmarDelecao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
-        protected global::DevExpress.Web.ASPxButton ASPxButton1;
+        protected global::DevExpress.Web.ASPxButton btnConfirmarDelecao;
 
         /// <summary>
-        /// Controle ASPxButton2.
+        /// Controle btnCancelarDelecao.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
-        protected global::DevExpress.Web.ASPxButton ASPxButton2;
+        protected global::DevExpress.Web.ASPxButton btnCancelarDelecao;
 
         /// <summary>
         /// Controle CreatePanel.
@@ -267,22 +267,22 @@ namespace DXWebApplication1
         protected global::DevExpress.Web.ASPxTextBox senhaPessoaFisica;
 
         /// <summary>
-        /// Controle ASPxButton3.
+        /// Controle btnCreatePessoaFisica.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
-        protected global::DevExpress.Web.ASPxButton ASPxButton3;
+        protected global::DevExpress.Web.ASPxButton btnCreatePessoaFisica;
 
         /// <summary>
-        /// Controle ASPxButton4.
+        /// Controle btnCancelPessoaFisica.
         /// </summary>
         /// <remarks>
         /// Campo gerado automaticamente.
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
-        protected global::DevExpress.Web.ASPxButton ASPxButton4;
+        protected global::DevExpress.Web.ASPxButton btnCancelPessoaFisica;
 
         /// <summary>
         /// Controle AddDependente.
